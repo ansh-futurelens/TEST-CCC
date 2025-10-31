@@ -1,7 +1,9 @@
-import React from 'react';
-
-// Define types for better type checking
-interface Link {
+import React, { useState, useEffect } from "react";
+import DownloadForm from "../universities/DownloadForm";
+import ContactForm from "../aboutus/ContactForm";
+import Form from "../home/Form";
+import { useRouter } from "next/navigation";
+interface LinkItem {
   name: string;
   path: string;
 }
@@ -9,21 +11,33 @@ interface Link {
 interface ImageLink {
   src: string;
   alt: string;
+  title: string;
+  link?: string;
 }
 
 interface MenuSection {
   title: string;
-  links?: Link[];
+  links?: LinkItem[];
   images?: ImageLink[];
 }
 
 const Footer: React.FC = () => {
+  const [isDownloadOpen, setIsDownloadOpen] = useState(false);
+  const [isContactOpen, setIsContactOpen] = useState(false);
+  const [isDemoFormOpen, setIsDemoFormOpen] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    document.body.style.overflow =
+      isDownloadOpen || isContactOpen || isDemoFormOpen ? "hidden" : "auto";
+  }, [isDownloadOpen, isContactOpen, isDemoFormOpen]);
+
   const menuLinks: MenuSection[] = [
     {
       title: "SERVICES",
       links: [
-        { name: "Individuals", path: "/individuals" },
-        { name: "Teams", path: "/teams" },
+        { name: "Individuals", path: "/individual" },
+        { name: "Universities", path: "/universities" },
         { name: "Organizations", path: "/organizations" },
       ],
     },
@@ -38,17 +52,22 @@ const Footer: React.FC = () => {
     {
       title: "ABOUT",
       links: [
-        { name: "About Us", path: "/about" },
-        { name: "Blog", path: "/blog" },
-        { name: "Terms of Use", path: "/terms-of-use" },
-        { name: "Privacy Policy", path: "/privacy-policy" },
+        { name: "About Us", path: "/aboutus" },
+        { name: "Blog", path: "https://blog.myqstudio.com/" },
+        { name: "Terms of Use", path: "https://myqstudio.com/terms-of-use" },
+        { name: "Privacy Policy", path: "https://myqstudio.com/privacy-policy" },
       ],
     },
     {
       title: "GET THE APP",
       images: [
-        { src: "/media/footer/apple.png", alt: "App Store" },
-        { src: "/media/footer/playStore.png", alt: "Google Play" },
+        { src: "/media/footer/apple.webp", alt: "App Store", title: "App Store" },
+        {
+          src: "/media/footer/playStore.webp",
+          alt: "Google Play",
+          title: "Google Play",
+          link: "https://play.google.com/store/apps/details?id=com.myqstudio.myq.prod",
+        },
       ],
     },
   ];
@@ -56,115 +75,143 @@ const Footer: React.FC = () => {
   const socialIcons = [
     {
       name: "LinkedIn",
-      href: "#", // Placeholder
-      src: "/media/icons/linkedin.png",
+      title: "LinkedIn",
+      href: "https://www.linkedin.com/authwall?trk=bf&trkInfo=AQEQed5JiPUHLAAAAZoj22wwa_TNPuTexkaBlw_kPiOjinpuO0fWZeTwFIeUXye6CdvgFhZr4BlUXYdvRllGkpz8kECQNBCQOyrAeFc0TVzDITL0uyEffe8jJP3FauagnhnT8to=&original_referer=&sessionRedirect=https%3A%2F%2Fwww.linkedin.com%2Fcompany%2Fmyqstudio%2Fabout%2F",
+      src: "/media/icons/linkedin.webp",
     },
     {
       name: "Instagram",
-      href: "#", // Placeholder
-      src: "/media/icons/instagram.png",
+      title: "Instagram",
+      href: "https://www.instagram.com/myqstudio/",
+      src: "/media/icons/instagram.webp",
     },
     {
       name: "Facebook",
-      href: "#", // Placeholder
-      src: "/media/icons/facebook.png",
+      title: "Facebook",
+      href: "https://www.facebook.com/people/Q-Studio/61551147298303/",
+      src: "/media/icons/facebook.webp",
     },
   ];
 
-  return (
-    <footer
-      className="mx-auto pt-20 sm:pt-24 md:pt-28 text-white gothic antialiased bg-cover bg-center"
-      style={{ backgroundImage: "url('/media/footer/footer.png')" }}
-    >
-      <div className="container-custom flex flex-col md:flex-row md:justify-between md:items-start gap-10 md:gap-16 lg:gap-20 2xl:gap-24 4xl:justify-center">
-        {/* Left Column: Logo, Tagline, Social Icons */}
-        <div className="md:w-1/2 lg:w-1/3 space-y-6 min-w-[250px] md:min-w-0">
-          <button
-            onClick={() => console.log("Navigating to homepage")}
-            className="p-0 bg-transparent border-none cursor-pointer"
-            aria-label="Go to homepage"
-          >
-            <img
-              src="media/logos/q_white_logo.png"
-              alt="logo"
-              className="w-20 sm:w-24 md:w-22 h-auto"
-            />
-          </button>
-          <h4 className="max-w-full sm:max-w-[460px] text-white font-medium text-base sm:text-lg md:text-xl xl:text-[18px] leading-relaxed">
-            Mind Skills for individuals and teams.
-            <br />
-            Transformative solutions for organizations.
-          </h4>
+  const handleLinkClick = (linkName: string, path: string) => {
+    if (linkName === "Download eBook") {
+      setIsDownloadOpen(true);
+    } else if (linkName === "Contact Us") {
+      setIsContactOpen(true);
+    } else if (linkName === "Schedule a Demo") {
+      setIsDemoFormOpen(true);
+    } else {
+      window.location.href = path;
+    }
+  };
 
-          <div className="flex space-x-4 mt-4">
-            {socialIcons.map((icon) => (
-              <a
-                key={icon.name}
-                aria-label={icon.name}
-                href={icon.href}
-                className="hover:opacity-75"
-              >
-                <img
-                  src={icon.src}
-                  alt={icon.name}
-                  className="w-6 sm:w-8 h-6 sm:h-8 object-contain"
-                />
-              </a>
+  return (
+    <>
+      <footer
+        className="footer-root"
+        style={{ backgroundImage: "url('/media/footer/footer.webp')" }}
+      >
+        <div className="footer-container container-custom">
+          <div className="footer-logo-section">
+            <button
+              onClick={() => router.push("/")}
+              className="footer-logo-btn"
+              aria-label="Go to homepage"
+            >
+              <img src="media/logos/q_white_logo.webp" alt="logo" className="footer-logo-img" />
+            </button>
+            <h4 className="footer-desc">
+              Mind Skills for individuals and teams.
+              <br />
+              Transformative solutions for organizations.
+            </h4>
+
+            <div className="footer-social-icons flex space-x-4">
+              {socialIcons.map((icon) => (
+                <a
+                  key={icon.name}
+                  aria-label={icon.name}
+                  href={icon.href}
+                  className="footer-social-icon-link"
+                >
+                  <img
+                    src={icon.src}
+                    alt={icon.name}
+                    className="footer-social-icon-img h-8 w-8 object-contain transition-transform duration-300 ease-out hover:scale-110"
+                  />
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div className="footer-links-wrapper">
+            {menuLinks.map((section) => (
+              <div key={section.title} className="footer-section">
+                <h3
+                  className={`footer-section-title ${
+                    section.title === "GET THE APP" ? "ml-5" : ""
+                  }`}
+                >
+                  {section.title}
+                </h3>
+
+                {section.links && (
+                  <ul className="footer-section-links">
+                    {section.links.map((link) => (
+                      <li key={link.name}>
+                        <button
+                          onClick={() => handleLinkClick(link.name, link.path)}
+                          className="footer-link"
+                        >
+                          {link.name}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {section.images && (
+                  <div className="footer-section-images">
+                    {section.images.map((img) => (
+                      <a key={img.alt} href={img.link} target="_blank" rel="noopener noreferrer">
+                        <img src={img.src} alt={img.alt} className="footer-section-img" />
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         </div>
 
-        {/* Right Columns: Menu Links and App Downloads */}
-        {/* Use flex-wrap to allow columns to wrap on smaller horizontal spaces */}
-        <div className="flex flex-col sm:flex-row flex-wrap justify-between gap-x-8 gap-y-10 md:gap-x-12 md:gap-y-0 lg:gap-x-16 text-white md:w-1/2 lg:w-2/3">
-          {menuLinks.map((section) => (
-            <div
-              key={section.title}
-              // flex-grow/shrink/basis for even distribution, min-w to prevent squishing
-              className="flex-grow flex-shrink-0 basis-auto min-w-[140px] sm:min-w-[150px] space-y-4 mt-6 sm:mt-0"
-            >
-              <h3 className="font-bold text-lg sm:text-xl lg:text-lg">
-                {section.title}
-              </h3>
+        <hr className="footer-hr container-custom" />
+        <h6 className="footer-copyright">© 2025, Sashya Living Corporation, DBA MyQStudio</h6>
+      </footer>
 
-              {section.links && (
-                <ul className="space-y-3 leading-relaxed">
-                  {section.links.map((link) => (
-                    <li key={link.name}>
-                      <button
-                        onClick={() => console.log(`Navigating to ${link.name}`)}
-                        className="hover:text-gray-300 transition text-left cursor-pointer text-base sm:text-lg font-[400]"
-                      >
-                        {link.name}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-
-              {section.images && (
-                <div className="flex flex-col space-y-3 mt-2 items-start">
-                  {section.images.map((img) => (
-                    <img
-                      key={img.alt}
-                      src={img.src}
-                      alt={img.alt}
-                      className="w-32 sm:w-36 md:w-40 lg:w-44 h-auto object-contain"
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
+      {isDownloadOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="relative w-full max-w-6xl">
+            <DownloadForm onClose={() => setIsDownloadOpen(false)} />
+          </div>
         </div>
-      </div>
+      )}
 
-      <hr className="border-white !my-10 container-custom !opacity-10" />
+      {isContactOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="relative w-full max-w-6xl">
+            <ContactForm isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
+          </div>
+        </div>
+      )}
 
-      <h6 className="text-center text-white leading-relaxed pb-8 !text-md !font-[500]">
-        © 2025, Sashya Living Corporation, DBA MyQStudio
-      </h6>
-    </footer>
+      {isDemoFormOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="relative w-full max-w-6xl">
+            <Form isOpen={isDemoFormOpen} onClose={() => setIsDemoFormOpen(false)} />
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSpring, animated } from "@react-spring/web";
+import { CONTENT_CONFIG } from "@/config/contentConfig";
+import { motion } from "framer-motion";
 
 interface ScreenData {
   header: string;
@@ -13,15 +15,53 @@ interface Feature {
   title: string;
   detail: string;
 }
+const LazyImage: React.FC<{
+  src: string;
+  alt: string;
+  className?: string;
+}> = ({ src, alt, className }) => {
+  const [loaded, setLoaded] = useState(false);
+  const [visible, setVisible] = useState(false);
 
+  useEffect(() => {
+    const img = new Image();
+    img.src = src;
+    img.onload = () => setLoaded(true);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    const target = document.getElementById(src);
+    if (target) observer.observe(target);
+    return () => observer.disconnect();
+  }, [src]);
+
+  return (
+    <div id={src} className={`relative ${className}`}>
+      {visible && (
+        <img
+          src={src}
+          alt={alt}
+          onLoad={() => setLoaded(true)}
+          className={`transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"}`}
+        />
+      )}
+    </div>
+  );
+};
 const MOCK_SCREENS: ScreenMap = {
   1: {
     header: "Pathways",
     content: (
       <img
-        src="media\organizations\dashboard1.png"
+        src="media\organizations\dashboard1.webp"
         alt="Pathways Screen"
-        className="w-full h-full object-contain"
+        className="h-full w-full object-contain"
       />
     ),
   },
@@ -29,9 +69,9 @@ const MOCK_SCREENS: ScreenMap = {
     header: "Quick Relief",
     content: (
       <img
-        src="media\organizations\dashboard2.png"
+        src="media\organizations\dashboard2.webp"
         alt="Quick Relief Screen"
-        className="w-full h-full object-contain"
+        className="h-full w-full object-contain"
       />
     ),
   },
@@ -39,9 +79,9 @@ const MOCK_SCREENS: ScreenMap = {
     header: "Mindset Power",
     content: (
       <img
-        src="media\organizations\dashboard3.png"
+        src="media\organizations\dashboard3.webp"
         alt="Mindset Power Screen"
-        className="w-full h-full object-contain"
+        className="h-full w-full object-contain"
       />
     ),
   },
@@ -49,54 +89,23 @@ const MOCK_SCREENS: ScreenMap = {
     header: "Journal",
     content: (
       <img
-        src="media\organizations\dashboard4.png"
+        src="media\organizations\dashboard4.webp"
         alt="Journal Screen"
-        className="w-full h-full object-contain"
+        className="h-full w-full object-contain"
       />
     ),
   },
 };
 
-const UPDATED_FEATURES: Feature[] = [
-  {
-    id: 1,
-    title: "Multidimensional",
-    detail:
-      "Across time periods, teams, levels, organization structure, locations",
-  },
-  {
-    id: 2,
-    title: "Individual and organization views",
-    detail:
-      "Monitoring individual progress, organization-wide engagement, and business outcomes",
-  },
-  {
-    id: 3,
-    title: "Aggregate overview",
-    detail:
-      "Meaningful analysis in aggregation, while protecting individual anonymity",
-  },
-  {
-    id: 4,
-    title: "Convert into actions",
-    detail:
-      "Progress results and analysis synthesized into clear, executable strategies",
-  },
-];
 
 interface DynamicPhoneMockupProps {
-  activeScreenId: ScreenKey;
+  activeScreenId: any;
 }
 
-const DynamicPhoneMockup: React.FC<DynamicPhoneMockupProps> = ({
-  activeScreenId,
-}) => {
+const DynamicPhoneMockup: React.FC<DynamicPhoneMockupProps> = ({ activeScreenId }) => {
   return (
-    <div className="flex justify-center items-center relative w-full">
-      <div
-        className="relative w-72 h-[380px] lg:w-[200px] md:h-[200px] lg:w-[320px] lg:h-[200px] xl:w-[400px] xl:h-[600px] 2xl:w-[500px] 2xl:h-[680px] 
-  overflow-hidden flex items-center justify-center xl:mt-[-98px] "
-      >
+    <div className="relative flex w-full items-center justify-center">
+      <div className="relative flex h-[380px] w-72 items-center justify-center overflow-hidden md:h-[200px] lg:h-[200px] lg:w-[200px] lg:w-[320px] xl:mt-[-98px] xl:h-[600px] xl:w-[400px] 2xl:h-[600px] 2xl:w-[500px]">
         {Object.entries(MOCK_SCREENS).map(([id, screen]) => {
           const isActive = Number(id) === activeScreenId;
 
@@ -131,96 +140,94 @@ const DynamicPhoneMockup: React.FC<DynamicPhoneMockupProps> = ({
   );
 };
 
-const Actionable: React.FC = () => {
-  const [activeFeatureId, setActiveFeatureId] = useState<ScreenKey>(1);
-  const [isMobileView, setIsMobileView] = useState<boolean>(false);
+const Actionable = () => {
+  const [activeFeatureId, setActiveFeatureId] = useState(1);
+  const [isMobileView, setIsMobileView] = useState(false);
 
   useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobileView(window.innerWidth < 1280);
-    };
-
+    const checkScreenSize = () => setIsMobileView(window.innerWidth < 1280);
     checkScreenSize();
     window.addEventListener("resize", checkScreenSize);
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
-  const containerClasses = "";
-
-  const activeFeature = UPDATED_FEATURES.find(
-    (feature) => feature.id === activeFeatureId
-  );
+  const DATA = CONTENT_CONFIG.ORGANIZATION_PAGE.ACTIONABLE;
+  const activeFeature = DATA.FEATURES.find((f) => f.id === activeFeatureId);
 
   return (
-    <div className="w-screen bg-[#F9F9F9] font-inter text-gray-800 select-none py-16 sm:py-20 px-4 sm:px-8 md:px-10 lg:px-20">
-      <section className="h-full">
-        <div className={containerClasses}>
-          <div className="flex flex-col xl:items-center justify-center xl:px-8 xl:text-center ">
-            <h2 className="!font-bold sm:font-normal 2xl:text-[45px] xl:text-[40px] lg:text-[28px] md:text-[25px] sm:text-[20px] lg:text-xl sm:text-2xl md:text-xl !leading-[100%] !tracking-wide text-teal-900">
-              Actionable insights for better decision making.
-              <br />
-            </h2>
-          </div>
+    <div className="actionable-root">
+     
+      <section className="actionable-hero-section">
+        <div className="actionable-heading-wrapper">
+          <h2 className="actionable-heading-primary">
+            {DATA.HERO.HEADING.map((line, idx) => (
+              <span key={idx} className="block">
+                {line}
+              </span>
+            ))}
+          </h2>
         </div>
       </section>
 
-      <section className={`${containerClasses} mb-0 pb-0`}>
-        <div className="container-custom flex flex-col xl:grid xl:grid-cols-2 xl:gap-50 items-start">
-          <div className="order-1 xl:order-2 xl:mt-0 pt-8 xl:pt-0 flex justify-center w-full">
+      
+      <section className="actionable-features-section">
+        <div className="container-custom actionable-container">
+         
+          <div className="actionable-mockup-wrapper">
             <DynamicPhoneMockup activeScreenId={activeFeatureId} />
           </div>
 
-          <div className="order-2 xl:order-1 xl:pt-20">
+         
+          <div className="actionable-features-wrapper">
             {isMobileView ? (
               activeFeature && (
-                <div className="flex flex-col items-center text-center px-4 mt-8">
-                  <div className="flex items-center justify-center gap-2 mb-4">
-                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#BDBDBD1A]">
-                      <span className="font-bold text-teal-900 text-2xl">
-                        {activeFeature.id}
-                      </span>
+                <div className="actionable-feature-mobile">
+                  <div className="actionable-feature-mobile-header">
+                    <div className="flex h-10 w-auto items-center justify-center rounded-full bg-[#F3F3F3] px-4">
+                      <span className="text-2xl font-bold text-teal-900">{activeFeature.id}</span>
                     </div>
-                    <h4 className="text-xl sm:text-2xl font-semibold text-teal-900">
+                    <h4 className="actionable-feature-mobile-title">
                       {activeFeature.title}
                     </h4>
                   </div>
-                  <h4 className="font-normal text-base text-gray-800 mb-8 max-w-md">
+                  <h4 className="actionable-feature-mobile-desc">
                     {activeFeature.detail}
                   </h4>
                 </div>
               )
             ) : (
-              <ul className="space-y-10">
-                {UPDATED_FEATURES.map((feature) => {
+              <ul className="actionable-feature-list">
+                {DATA.FEATURES.map((feature) => {
                   const isActive = feature.id === activeFeatureId;
                   return (
                     <li
                       key={feature.id}
-                      className="flex flex-col gap-2 md:flex-row md:gap-4 cursor-pointer group"
+                      className="actionable-feature-item group"
                       onMouseEnter={() => setActiveFeatureId(feature.id)}
                     >
-                      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#BDBDBD1A]">
-                        <span className="font-bold text-teal-900 text-2xl">
-                          {feature.id}
-                        </span>
+                      <div className="actionable-feature-number">
+                        <span>{feature.id}</span>
                       </div>
-                      <div className="max-w-5xl">
+                      <div className="actionable-feature-content">
                         <h3
-                          className={`text-lg sm:text-xl md:text-2xl lg:text-2xl font-semibold transition-all duration-300 ease-in-out ${
-                            isActive ? "text-teal-900 mb-2" : "text-teal-800"
-                          }`}
+                          className="text-[20px] font-semibold transition-colors duration-300 sm:text-[18px] md:text-[20px] lg:text-[23px] text-teal-900"
                         >
                           {feature.title}
                         </h3>
-                        <h4
-                          className={`font-normal transition-[max-height,opacity,margin-top] duration-500 ease-in-out overflow-hidden ${
-                            isActive
-                              ? "text-xl lg:text-2xl text-gray-800 max-h-40 mt-5 mb-5 opacity-100"
-                              : "text-base text-gray-600 max-h-0 mt-0 opacity-0"
-                          }`}
+                        <motion.div
+                          key={feature.id}
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{
+                            height: isActive ? "auto" : 0,
+                            opacity: isActive ? 1 : 0,
+                          }}
+                          transition={{ duration: 0.6, ease: "easeInOut" }}
+                          className="overflow-hidden"
                         >
-                          {feature.detail}
-                        </h4>
+                          <div className="actionable-feature-detail">
+                            {feature.detail}
+                          </div>
+                        </motion.div>
                       </div>
                     </li>
                   );
@@ -230,13 +237,13 @@ const Actionable: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex justify-center space-x-2 mt-6 mb-10 xl:hidden">
-          {UPDATED_FEATURES.map((feature) => (
+        
+        <div className="actionable-dots-wrapper">
+          {DATA.FEATURES.map((feature) => (
             <span
               key={feature.id}
-              className={`block w-3 h-3 rounded-full cursor-pointer transition-colors duration-300 ${
-                feature.id === activeFeatureId ? "bg-teal-900" : "bg-gray-400"
-              }`}
+              className={`block h-3 w-3 cursor-pointer rounded-full transition-colors duration-300 ${feature.id === activeFeatureId ? "bg-teal-900" : "bg-gray-400"
+                }`}
               onClick={() => setActiveFeatureId(feature.id)}
             ></span>
           ))}

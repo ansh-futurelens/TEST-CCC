@@ -2,6 +2,8 @@ const withPWA = require("next-pwa")({
   dest: "public",
   register: true,
   skipWaiting: true,
+  compress: true,
+  poweredByHeader: false,
   swcMinify: true,
   disable: process.env.NODE_ENV === "development",
   runtimeCaching: [
@@ -22,4 +24,13 @@ const withPWA = require("next-pwa")({
 
 module.exports = withPWA({
   reactStrictMode: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "blog.myqstudio.com",
+        pathname: "/**",
+      },
+    ],
+  },
 });

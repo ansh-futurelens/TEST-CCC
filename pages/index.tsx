@@ -1,10 +1,10 @@
-import MindPowerSection from "../components/common/CommonSection1";
 import HeroSection from "../components/home/HeroSection";
 import MindEnergySection from "../components/home/MindEnergySection";
 import MindFocusSection from "../components/home/MindFocusSection";
 import PeoplesSaying from "../components/home/PeoplesSaying";
 import UnlockPotentialSection from "../components/home/UnlockPotentialSection";
-import CollaborateSection from "../components/home/CollaborateSection";
+import MindPowerSection from "../components/home/MindPowerSection";
+import Excellence from "../components/home/Excellence";
 
 const Home = () => {
   return (
@@ -13,7 +13,7 @@ const Home = () => {
       <MindEnergySection />
       <MindFocusSection />
       <MindPowerSection />
-      <CollaborateSection />
+      <Excellence />
       <UnlockPotentialSection />
       <PeoplesSaying />
     </div>

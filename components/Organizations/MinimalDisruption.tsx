@@ -1,12 +1,17 @@
-import React, { useState, useRef, useEffect } from "react";
-
+import { CONTENT_CONFIG } from "@/config/contentConfig";
+import React, { useEffect, useState, useRef, ReactNode } from "react";
 
 interface SelectOption {
   value: string;
   label: string;
 }
 
-
+interface LazyBackgroundProps {
+  src: string;
+  className?: string;
+  style?: React.CSSProperties;
+  children?: ReactNode;
+}
 const FormInputField: React.FC<{
   id: string;
   label: string;
@@ -14,19 +19,18 @@ const FormInputField: React.FC<{
   placeholder: string;
 }> = ({ id, label, type, placeholder }) => (
   <div className="w-full">
-    <label htmlFor={id} className="sr-only">{label}</label>
+    <label htmlFor={id} className="sr-only">
+      {label}
+    </label>
     <input
       type={type}
       id={id}
       name={id}
       placeholder={placeholder}
-      className="block w-full px-4 py-4 bg-[#024E48] rounded-2xl 
-        focus:outline-none focus:ring-0 text-white placeholder-white 
-        text-lg transition duration-200 hover:bg-[#02514B] h-[64px]"
+      className="block h-[64px] w-full rounded-2xl bg-[#024E48] px-4 py-4 text-lg text-white placeholder-white transition duration-200 hover:bg-[#02514B] focus:ring-0 focus:outline-none"
     />
   </div>
 );
-
 
 const FormSelectField: React.FC<{
   id: string;
@@ -51,14 +55,13 @@ const FormSelectField: React.FC<{
 
   return (
     <div className="relative w-full" ref={dropdownRef}>
-      <label htmlFor={id} className="sr-only">{label}</label>
+      <label htmlFor={id} className="sr-only">
+        {label}
+      </label>
       <button
         type="button"
         id={id}
-        className="block w-full px-4 py-4 bg-[#024E48] rounded-2xl
-          text-left text-lg text-white cursor-pointer relative pr-10
-          h-[64px] flex items-center justify-between hover:bg-[#02514B]
-          focus:outline-none focus:ring-0 transition duration-200"
+        className="relative block flex h-[64px] w-full cursor-pointer items-center justify-between rounded-2xl bg-[#024E48] px-4 py-4 pr-10 text-left text-lg text-white transition duration-200 hover:bg-[#02514B] focus:ring-0 focus:outline-none"
         onClick={() => setIsOpen(!isOpen)}
       >
         {selectedLabel}
@@ -75,16 +78,17 @@ const FormSelectField: React.FC<{
       </button>
       {isOpen && (
         <div
-          className="absolute z-[1000] left-0 w-full bg-[#01776F] rounded-xl shadow-lg"
+          className="absolute left-0 z-[1000] w-full rounded-xl bg-[#01776F] shadow-lg"
           style={{ bottom: "100%", marginBottom: "-200px" }}
         >
           {options.map((option) => (
             <div
               key={option.value}
-              onClick={() => { setSelected(option.value); setIsOpen(false); }}
-              className={`block px-4 py-4 text-lg cursor-pointer 
-                ${option.value === selected ? "font-semibold text-white" : "text-white"}
-                hover:bg-[#016962] transition duration-150 ease-in-out`}
+              onClick={() => {
+                setSelected(option.value);
+                setIsOpen(false);
+              }}
+              className={`block cursor-pointer px-4 py-4 text-lg ${option.value === selected ? "font-semibold text-white" : "text-white"} transition duration-150 ease-in-out hover:bg-[#016962]`}
               role="option"
               aria-selected={option.value === selected}
             >
@@ -97,10 +101,74 @@ const FormSelectField: React.FC<{
   );
 };
 
+const LazyBackground: React.FC<LazyBackgroundProps> = ({ src, className, style, children }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className={className}
+      style={{
+        ...style,
+        backgroundImage: isVisible ? `url(${src})` : undefined,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
+interface LazyImageProps {
+  src: string;
+  alt: string;
+  className?: string;
+}
+
+const LazyImage: React.FC<LazyImageProps> = ({ src, alt, className }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    if (imgRef.current) observer.observe(imgRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return <img ref={imgRef} src={isVisible ? src : ""} alt={alt} className={className} />;
+};
 
 const Form: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
-  const [isSubmitted, setIsSubmitted] = useState(false);
-
   useEffect(() => {
     const handleKeydown = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     if (isOpen) document.body.style.overflow = "hidden";
@@ -111,11 +179,6 @@ const Form: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onCl
       window.removeEventListener("keydown", handleKeydown);
     };
   }, [isOpen, onClose]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitted(true);
-  };
 
   if (!isOpen) return null;
 
@@ -153,18 +216,18 @@ const Form: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onCl
   ];
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/40 flex items-center justify-center p-4">
-      <div
-        className="relative rounded-4xl max-w-6xl w-full mx-auto my-10 shadow-2xl overflow-visible transform transition-all duration-300"
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/40 p-4">
+      <LazyBackground
+        src="/media/team/download_bg.webp"
+        className="relative mx-auto my-10 w-full max-w-6xl transform overflow-visible rounded-4xl shadow-2xl transition-all duration-300"
         style={{
-          backgroundImage: `url('/media/team/download_bg.png')`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-3 bg-[#02514B] text-white rounded-full flex items-center justify-center  transition duration-200"
+          className="absolute top-4 right-4 z-10 flex items-center justify-center rounded-full bg-[#02514B] p-3 text-white transition duration-200"
           aria-label="Close modal"
         >
           <svg
@@ -179,175 +242,128 @@ const Form: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onCl
           </svg>
         </button>
 
-        <div className="backdrop-blur-md rounded-4xl p-6 sm:p-10 md:p-12 w-full">
-          <h2 className="text-4xl font-bold text-center text-white mb-6">
+        <div className="w-full rounded-4xl p-6 backdrop-blur-md sm:p-10 md:p-12">
+          <h2 className="mb-6 text-center text-4xl font-bold text-white">
             Experience the impact for yourself!
           </h2>
-          <h3 className="text-white mb-8 md:mb-12 max-w-7xl mx-auto text-2xl text-center">
-            Schedule a personalized demo to learn how Q Studio's Mind Skills
-            Training can help your<br /> organization and employees.
+          <h3 className="mx-auto mb-8 max-w-7xl text-center text-2xl text-white md:mb-12">
+            Schedule a personalized demo to learn how Q Studio's Mind Skills Training can help your
+            <br /> organization and employees.
           </h3>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormInputField id="firstName" label="First Name" type="text" placeholder="First Name" />
+          <form className="space-y-6">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <FormInputField
+                id="firstName"
+                label="First Name"
+                type="text"
+                placeholder="First Name"
+              />
               <FormInputField id="lastName" label="Last Name" type="text" placeholder="Last Name" />
-              <FormInputField id="emailAddress" label="Email" type="email" placeholder="Email Address" />
-              <FormInputField id="mobileNumber" label="Mobile" type="tel" placeholder="Mobile Number" />
-              <FormInputField id="companyName" label="Company" type="text" placeholder="Company Name" />
+              <FormInputField
+                id="emailAddress"
+                label="Email"
+                type="email"
+                placeholder="Email Address"
+              />
+              <FormInputField
+                id="mobileNumber"
+                label="Mobile"
+                type="tel"
+                placeholder="Mobile Number"
+              />
+              <FormInputField
+                id="companyName"
+                label="Company"
+                type="text"
+                placeholder="Company Name"
+              />
               <FormSelectField id="industry" label="Industry" options={industryOptions} />
               <FormSelectField id="function" label="Function" options={functionOptions} />
-              <FormSelectField id="employeeCount" label="Employees" options={employeeCountOptions} />
+              <FormSelectField
+                id="employeeCount"
+                label="Employees"
+                options={employeeCountOptions}
+              />
             </div>
 
-            <div className="w-full flex lg:justify-center pt-14">
+            <div className="flex w-full pt-14 lg:justify-center">
               <button
                 type="submit"
-                className="py-4 px-7 bg-[#71604D] font-medium text-2xl text-[#C7C2BB] rounded-full transition duration-300 ease-in-out select-none"
+                className="rounded-full bg-[#71604D] px-7 py-4 text-2xl font-medium text-[#C7C2BB] transition duration-300 ease-in-out select-none"
               >
                 Submit
               </button>
             </div>
           </form>
         </div>
-      </div>
-
-      {isSubmitted && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[60]">
-          <div className="bg-white p-8 rounded-xl shadow-2xl max-w-sm w-full text-center">
-            <h3 className="text-xl font-semibold text-teal-800 mb-4">Submission Successful!</h3>
-            <p className="text-gray-600 mb-6">
-              Thank you for your interest. Your demo request has been logged.
-            </p>
-            <button
-              onClick={() => { setIsSubmitted(false); onClose(); }}
-              className="bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-6 rounded-lg transition duration-200"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+      </LazyBackground>
     </div>
   );
 };
 
 const MinimalDisruption = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const toggleModal = () => setIsModalOpen(!isModalOpen);
+
+  const DATA = CONTENT_CONFIG.ORGANIZATION_PAGE.MINIMAL_DISRUPTION;
+
   return (
-    <div className="h-full w-screen bg-[#F3F3F3] select-none py-16 sm:py-20 px-4 sm:px-8 md:px-10 lg:px-20">
-      <div className="container-custom ">
-        <div className="flex flex-col lg:items-center justify-center 2xl:px-20 3xl:px-50 lg:text-center">
-          <h2 className="font-sans !font-bold text-2xl sm:font-normal sm:text-2xl !sm:leading-8 !sm:tracking-wider text-teal-900 mx-auto lg:max-w-lg xl:max-w-7xl 2xl:text-[30px] 3xl:text-[40px]">
-            An easy roll-out process with minimal
-            <span className="block">disruption to your business.</span>
+    <div className="minimal-root">
+      <div className="container-custom">
+        <div className="minimal-heading-wrapper">
+          <h2 className="minimal-heading-primary">
+            {DATA.HERO.HEADING.map((line, idx) => (
+              <span key={idx} className="block">
+                {line}
+              </span>
+            ))}
           </h2>
         </div>
-
-        <div className="py-10 w-full flex justify-center">
-          <div className="flex flex-col xl:flex-row justify-between items-start w-full max-w-7xl gap-6">
-            <div className="flex flex-col items-center text-center p-6 w-full">
-              <img
-                src="/media/organizations/train.png"
-                alt="Train"
-                className="w-44 sm:w-48 md:w-52 lg:w-54 h-44 sm:h-48 md:h-52 lg:h-54 object-contain mb-4 select-none"
-              />
-              <h4 className="text-[26px] sm:text-[28px] md:text-[30px] font-bold text-red-700">
-                Train
-              </h4>
-              <p className="text-gray-800 mt-2 font-normal !text-[22px] sm:!text-[18px] md:!text-[26px] !max-w-sm !mx-auto">
-                Employees learn, practice, and build Mind Skills.
-              </p>
-            </div>
-
-            <div className="flex flex-col items-center text-center p-6 w-full">
-              <img
-                src="/media/organizations/transform.png"
-                alt="Transform"
-                className="w-44 sm:w-48 md:w-52 lg:w-54 h-44 sm:h-48 md:h-52 lg:h-54 object-contain mb-4 select-none"
-              />
-              <h4 className="text-[26px] sm:text-[28px] md:text-[30px] font-bold text-red-700">
-                Transform
-              </h4>
-              <p className="text-gray-800 mt-2 font-normal !text-[22px] sm:!text-[18px] md:!text-[26px] !max-w-sm !mx-auto">
-                Teams transform work environments and culture.
-              </p>
-            </div>
-
-            <div className="flex flex-col items-center text-center p-6 w-full">
-              <img
-                src="/media/organizations/track.png"
-                alt="Track"
-                className="w-44 sm:w-48 md:w-52 lg:w-54 h-44 sm:h-48 md:h-52 lg:h-54 object-contain mb-4 select-none"
-              />
-              <h4 className="text-[26px] sm:text-[28px] md:text-[30px] font-bold text-red-700">
-                Track
-              </h4>
-              <p className="text-gray-800 mt-2 font-normal !text-[22px] sm:!text-[18px] md:!text-[26px] !max-w-sm !mx-auto">
-                Leaders monitor progress and business impact.
-              </p>
-            </div>
+        <div className="minimal-steps-wrapper">
+          <div className="minimal-steps-container">
+            {DATA.STEPS.map((step, idx) => (
+              <div key={idx} className="minimal-step-card">
+                <LazyImage
+                  src={step.img}
+                  alt={step.title}
+                  className="minimal-step-img"
+                />
+                <h4 className="minimal-step-title">{step.title}</h4>
+                <h5 className="minimal-step-desc">{step.desc}</h5>
+              </div>
+            ))}
           </div>
         </div>
-
-        <div className="pt-5 2xl:pt-10  w-full   ">
-          <div className="flex flex-col   w-full  gap-6">
-            <h2 className="font-sans !font-bold text-2xl  sm:font-normal sm:text-2xl !sm:leading-8 !sm:tracking-wider text-gray-800  2xl:text-[30px] 3xl:text-[40px] ">
+        <div className="minimal-program-root">
+          <div className="minimal-program-wrapper">
+            <h2 className="minimal-program-heading">
               What’s included in The WellAbove Program
             </h2>
-            <div className="relative mt-10">
-              <div className="absolute lg:left-[320px] top-0 bottom-0 w-[2px] bg-gray-line"></div>
-
-              <div className="absolute lg:left-[313px] -left-[5px] z-10">
-                <div className="absolute -top-[2px] w-4 h-4 bg-gray-800 rounded-full shadow-md"></div>
-                <div className="absolute  xl:top-[270px]  lg:top-[320px] top-[450px]  w-4 h-4 bg-gray-800 rounded-full shadow-md"></div>
-                <div className="absolute  xl:top-[520px]   lg:top-[640px] top-[880px] w-4 h-4 bg-gray-800 rounded-full shadow-md"></div>
-                <div className="absolute  xl:top-[780px]  lg:top-[930px] top-[1330px] w-4 h-4 bg-gray-800 rounded-full shadow-md"></div>
-              </div>
-              <div className="flex flex-col gap-14">
-                {[
-                  {
-                    img: "/media/organizations/workshops.png",
-                    title: "Digital workshops",
-                    desc: "Multi-part workshop series designed for different levels and outcomes; drives Program engagement and continuity.",
-                  },
-                  {
-                    img: "/media/organizations/learning.png",
-                    title: "Learning platform",
-                    desc: "Access to MyQStudio - the only Mind Skills app for peak performance.",
-                  },
-                  {
-                    img: "/media/organizations/enablers.png",
-                    title: "Enablers",
-                    desc: "Friction-less adoption with Communication toolkit, Surveys, Webinars - all hosted on SaaS infrastructure.",
-                  },
-                  {
-                    img: "/media/organizations/reporting.png",
-                    title: "Reporting & analytics",
-                    desc: "Insights to leadership on learning engagement and progress, as well as impact on key business metrics.",
-                  },
-                ].map((step, index) => (
+            <div className="minimal-program-timeline">
+              <div className="minimal-timeline-line"></div>
+              <div className="minimal-timeline-dots">
+                {DATA.PROGRAM_INCLUDE.map((_, index) => (
                   <div
                     key={index}
-                    className="flex flex-col lg:flex-row ml-[40px] lg:ml-0 items-start gap-8 relative"
-                  >
-                    <div className="flex-shrink-0">
-                      <img
+                    className="minimal-timeline-dot"
+                    style={{ top: `calc(${index} * 270px)` }}
+                  />
+                ))}
+              </div>
+              <div className="minimal-program-steps">
+                {DATA.PROGRAM_INCLUDE.map((step, index) => (
+                  <div key={index} className="minimal-program-item">
+                    <div className="minimal-program-img-wrapper">
+                      <LazyImage
                         src={step.img}
                         alt={step.title}
-                        className="rounded-2xl lg:w-64 w-full h-48 object-cover"
+                        className="minimal-program-img"
                       />
                     </div>
-
-                    <div className="flex flex-col lg:ml-[100px] mt-2">
-                      <h4 className="text-[26px] sm:text-[28px] md:text-[30px] font-bold text-teal-900">
-                        {step.title}
-                      </h4>
-                      <p className="text-gray-800 mt-2 font-normal !text-[22px] sm:!text-[18px] md:!text-[24px] ">
-                        {step.desc}
-                      </p>
+                    <div className="minimal-program-content">
+                      <h4 className="minimal-program-title">{step.title}</h4>
+                      <h5 className="minimal-program-desc">{step.desc}</h5>
                     </div>
                   </div>
                 ))}
@@ -355,19 +371,15 @@ const MinimalDisruption = () => {
             </div>
           </div>
         </div>
-
-        <div className="w-full ">
-          <div className="flex lg:justify-center h-auto pt-14 ">
-            <a
-              
-              target="_blank"
-              rel="noopener noreferrer"
-              className="!py-5 !px-7 bg-[#50418C] hover:bg-[#7B6CB9] font-medium text-2xl antialiased text-white rounded-full transition duration-300 ease-in-out select-none"
-              onClick={toggleModal}
-            >
-              Schedule a Demo
-            </a>
-          </div>
+        <div className="minimal-button-wrapper">
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            className="minimal-button"
+            onClick={toggleModal}
+          >
+            {DATA.BUTTON_PRIMARY.TEXT}
+          </a>
         </div>
       </div>
       {isModalOpen && <Form isOpen={isModalOpen} onClose={toggleModal} />}

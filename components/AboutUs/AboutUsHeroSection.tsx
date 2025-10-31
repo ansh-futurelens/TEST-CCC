@@ -1,13 +1,57 @@
+import React, { useEffect, useState, useRef } from "react";
 import Header from "../common/Header";
+import { useCachedImage } from "../useCachedImage";
+import { CONTENT_CONFIG } from "@/config/contentConfig";
 
-const AboutUsHeroSection = () => {
+interface LazyImageProps {
+  src: string;
+  alt: string;
+  className?: string;
+}
+
+const LazyImage: React.FC<LazyImageProps> = ({ src, alt, className }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    if (imgRef.current) observer.observe(imgRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return <img ref={imgRef} src={isVisible ? src : ""} alt={alt} className={className} />;
+};
+
+const AboutUsHeroSection: React.FC = () => {
+  const {
+    HEADING_PRIMARY,
+    PARAGRAPH_LINES,
+    IMAGE_SRC,
+    IMAGE_ALT,
+    BG_IMAGE,
+  } = CONTENT_CONFIG.ABOUT_US_PAGE.HERO;
+  const bgImage = useCachedImage(BG_IMAGE);
+
   return (
     <div
-      className="min-h-screen h-full w-screen bg-cover bg-center"
-      style={{ backgroundImage: "url('/media/about_us/about_us_bg.png')" }}
+      className="hero-root aboutus-hero-root"
+      style={{
+        backgroundImage: `url('${bgImage}')`,
+      }}
     >
       <div className="container-custom">
-  <Header
+        <Header
           bgColor=""
           textColor="#FFFFFF"
           activeBgColor="#FFC25E"
@@ -17,81 +61,26 @@ const AboutUsHeroSection = () => {
           buttonBgColor="#02514B"
           buttonHoverColor="#007c74"
         />
-        <div
-          className="
-            pt-20 lg:pt-24 xl:pt-32
-            flex flex-col xl:flex-row
-            h-auto xl:h-[80vh]
-            items-start
-            gap-8 xl:gap-16
-            pb-16
-          "
-        >
-          <div
-            className="
-              w-full xl:w-[68%]
-              h-auto
-              text-left
-            "
-          >
-            <div
-              className="
-                pt-15
-                h-auto
-                max-w-full
-                select-none
-              "
-            >
-              <h1
-                className="
-                  !font-sans !font-bold !text-white
-                  text-3xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl
-                  leading-snug sm:leading-tight lg:leading-tight
-                "
-              >
-                clear thoughts.
 
-              </h1>
-              <h2
-                className="
-                  font-medium sm:font-seminormal
-                  text-base sm:text-lg lg:text-xl xl:text-2xl
-                  leading-normal tracking-normal
-                  text-white !mt-8
-                "
-                style={{ fontFamily: "Figtree, sans-serif" }}
-              >
-                Revolutionizing mental fitness by making<br/>proven strategies and techniques accessible<br/>
-                worldwide, empowering everyone to build the<br/>
-                mental strength needed for peak performance,<br/>
-                meaningful connections, and a deeply fulfilling<br/>life.
+        <div className="hero-content-wrapper aboutus-hero-content">
+          <div className="hero-left-section aboutus-left">
+            <div className="hero-heading-container">
+              <h1 className="hero-heading-primary very-bolder">{HEADING_PRIMARY}</h1>
 
+              <h2 className="hero-paragraph aboutus-subheading">
+                {PARAGRAPH_LINES.map((line, index) => (
+                  <React.Fragment key={index}>
+                    {line}
+                    <br />
+                  </React.Fragment>
+                ))}
               </h2>
             </div>
-
-
           </div>
 
-          <div
-            className="
-    w-full xl:w-[30%]
-    h-auto
-    flex justify-start items-start
-    xl:mt-0
-  "
-          >
-            <img
-              src="/media/about_us/about_us_heading.png"
-
-              alt="Landing Girl"
-              className="
-      w-full h-auto object-contain
-      max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-full 2xl:max-w-full
-      mt-6  // Added slight bottom padding by moving image down
-    "
-            />
+          <div className="hero-right-section aboutus-right">
+            <LazyImage src={IMAGE_SRC} alt={IMAGE_ALT} className="hero-image" />
           </div>
-
         </div>
       </div>
     </div>

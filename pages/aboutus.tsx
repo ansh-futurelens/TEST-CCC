@@ -1,22 +1,21 @@
-import AboutUsHeroSection from "../components/AboutUs/AboutUsHeroSection";
-import Approach from "../components/AboutUs/Approach";
-import JoinOurMission from "../components/AboutUs/JoinOurMission";
-import Mission from "../components/AboutUs/Mission";
-import OurTeam from "../components/AboutUs/OurTeam";
-import Values from "../components/AboutUs/Values";
+import AboutUsHeroSection from "@/components/aboutus/AboutUsHeroSection";
+import Approach from "../components/aboutus/Approach";
+import JoinOurMission from "../components/aboutus/JoinOurMission";
+import Mission from "../components/aboutus/Mission";
+import OurTeam from "../components/aboutus/OurTeam";
+import Values from "../components/aboutus/Values";
 
 const AboutUs = () => {
-    return (
-        <div>
-            <AboutUsHeroSection />
-            <Mission />
-            <Values />
-            <Approach />
-            <OurTeam />
-            <JoinOurMission />
-
-        </div>
-    );
+  return (
+    <div>
+      <AboutUsHeroSection />
+      <Mission />
+      <Values />
+      <Approach />
+      <OurTeam />
+      <JoinOurMission />
+    </div>
+  );
 };
 
 export default AboutUs;

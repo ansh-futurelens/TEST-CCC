@@ -4,31 +4,19 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
-        <link rel="icon" type="image/svg+xml" href="/media/logos/q_logo.png" />
-        <meta name="description" content="The only Mind Skills app for peak performance"/>
-        <meta name="keywords" content="MyQStudio, Mental health, Flutter, Emotional, MyQ, Q Studio, Mind Skills, Practice"></meta>
-        <meta name="author" content="MyQStudio"></meta>
+        <link rel="icon" type="image/svg+xml" href="/media/logos/q_logo.webp" />
+        <link rel="preload" as="image" href="/media/bgs/individual_bg.webp" />
+        <link rel="preload" as="image" href="/media/bgs/landing_bg.webp" />
+        <link rel="preload" as="image" href="/media/bgs/teams_bg.webp" />
+        <link rel="preload" as="image" href="/media/bgs/organizations_bg.webp" />
+        <link rel="preload" as="image" href="/media/about_us/about_us_bg.webp" />
+        <link rel="preload" as="image" href="/media/bgs/resources_bg.webp" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
         <link
-          rel="preload"
-          as="image"
-          href="/media/bgs/individual_bg.webp"
+          href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300;1,300&display=swap"
+          rel="stylesheet"
         />
-        <link
-          rel="preload"
-          as="image"
-          href="/media/bgs/landing_bg.webp"
-        />
-        <link
-          rel="preload"
-          as="image"
-          href="/media/bgs/teams_bg.webp"
-        />
-        <link
-          rel="preload"
-          as="image"
-          href="/media/bgs/organizations_bg.webp"
-        />
-        <title>MyQStudio</title>
       </Head>
       <body className="antialiased">
         <Main />

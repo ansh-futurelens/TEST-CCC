@@ -1,11 +1,17 @@
-import React, { useState, useRef, useEffect } from "react";
-
+import { CONTENT_CONFIG } from "@/config/contentConfig";
+import React, { useEffect, useState, useRef, ReactNode } from "react";
 
 interface SelectOption {
   value: string;
   label: string;
 }
 
+interface LazyBackgroundProps {
+  src: string;
+  className?: string;
+  style?: React.CSSProperties;
+  children?: ReactNode;
+}
 
 const FormInputField: React.FC<{
   id: string;
@@ -14,19 +20,18 @@ const FormInputField: React.FC<{
   placeholder: string;
 }> = ({ id, label, type, placeholder }) => (
   <div className="w-full">
-    <label htmlFor={id} className="sr-only">{label}</label>
+    <label htmlFor={id} className="sr-only">
+      {label}
+    </label>
     <input
       type={type}
       id={id}
       name={id}
       placeholder={placeholder}
-      className="block w-full px-4 py-4 bg-[#024E48] rounded-2xl 
-        focus:outline-none focus:ring-0 text-white placeholder-white 
-        text-lg transition duration-200 hover:bg-[#02514B] h-[64px]"
+      className="block h-[64px] w-full rounded-2xl bg-[#024E48] px-4 py-4 text-lg text-white placeholder-white transition duration-200 hover:bg-[#02514B] focus:ring-0 focus:outline-none"
     />
   </div>
 );
-
 
 const FormSelectField: React.FC<{
   id: string;
@@ -51,14 +56,13 @@ const FormSelectField: React.FC<{
 
   return (
     <div className="relative w-full" ref={dropdownRef}>
-      <label htmlFor={id} className="sr-only">{label}</label>
+      <label htmlFor={id} className="sr-only">
+        {label}
+      </label>
       <button
         type="button"
         id={id}
-        className="block w-full px-4 py-4 bg-[#024E48] rounded-2xl
-          text-left text-lg text-white cursor-pointer relative pr-10
-          h-[64px] flex items-center justify-between hover:bg-[#02514B]
-          focus:outline-none focus:ring-0 transition duration-200"
+        className="relative block flex h-[64px] w-full cursor-pointer items-center justify-between rounded-2xl bg-[#024E48] px-4 py-4 pr-10 text-left text-lg text-white transition duration-200 hover:bg-[#02514B] focus:ring-0 focus:outline-none"
         onClick={() => setIsOpen(!isOpen)}
       >
         {selectedLabel}
@@ -75,16 +79,17 @@ const FormSelectField: React.FC<{
       </button>
       {isOpen && (
         <div
-          className="absolute z-[1000] left-0 w-full bg-[#01776F] rounded-xl shadow-lg"
+          className="absolute left-0 z-[1000] w-full rounded-xl bg-[#01776F] shadow-lg"
           style={{ bottom: "100%", marginBottom: "-200px" }}
         >
           {options.map((option) => (
             <div
               key={option.value}
-              onClick={() => { setSelected(option.value); setIsOpen(false); }}
-              className={`block px-4 py-4 text-lg cursor-pointer 
-                ${option.value === selected ? "font-semibold text-white" : "text-white"}
-                hover:bg-[#016962] transition duration-150 ease-in-out`}
+              onClick={() => {
+                setSelected(option.value);
+                setIsOpen(false);
+              }}
+              className={`block cursor-pointer px-4 py-4 text-lg ${option.value === selected ? "font-semibold text-white" : "text-white"} transition duration-150 ease-in-out hover:bg-[#016962]`}
               role="option"
               aria-selected={option.value === selected}
             >
@@ -97,6 +102,72 @@ const FormSelectField: React.FC<{
   );
 };
 
+const LazyBackground: React.FC<LazyBackgroundProps> = ({ src, className, style, children }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className={className}
+      style={{
+        ...style,
+        backgroundImage: isVisible ? `url(${src})` : undefined,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
+interface LazyImageProps {
+  src: string;
+  alt: string;
+  className?: string;
+}
+
+const LazyImage: React.FC<LazyImageProps> = ({ src, alt, className }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    if (imgRef.current) observer.observe(imgRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return <img ref={imgRef} src={isVisible ? src : ""} alt={alt} className={className} />;
+};
 
 const Form: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -111,11 +182,6 @@ const Form: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onCl
       window.removeEventListener("keydown", handleKeydown);
     };
   }, [isOpen, onClose]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitted(true);
-  };
 
   if (!isOpen) return null;
 
@@ -153,18 +219,18 @@ const Form: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onCl
   ];
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/40 flex items-center justify-center p-4">
-      <div
-        className="relative rounded-4xl max-w-6xl w-full mx-auto my-10 shadow-2xl overflow-visible transform transition-all duration-300"
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/40 p-4">
+      <LazyBackground
+        src="/media/team/download_bg.webp"
+        className="relative mx-auto my-10 w-full max-w-6xl transform overflow-visible rounded-4xl shadow-2xl transition-all duration-300"
         style={{
-          backgroundImage: `url('/media/team/download_bg.png')`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-3 bg-[#02514B] text-white rounded-full flex items-center justify-center  transition duration-200"
+          className="absolute top-4 right-4 z-10 flex items-center justify-center rounded-full bg-[#02514B] p-3 text-white transition duration-200"
           aria-label="Close modal"
         >
           <svg
@@ -179,191 +245,133 @@ const Form: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onCl
           </svg>
         </button>
 
-        <div className="backdrop-blur-md rounded-4xl p-6 sm:p-10 md:p-12 w-full">
-          <h2 className="text-4xl font-bold text-center text-white mb-6">
+        <div className="w-full rounded-4xl p-6 backdrop-blur-md sm:p-10 md:p-12">
+          <h2 className="mb-6 text-center text-4xl font-bold text-white">
             Experience the impact for yourself!
           </h2>
-          <h3 className="text-white mb-8 md:mb-12 max-w-7xl mx-auto text-2xl text-center">
-            Schedule a personalized demo to learn how Q Studio's Mind Skills
-            Training can help your<br /> organization and employees.
+          <h3 className="mx-auto mb-8 max-w-7xl text-center text-2xl text-white md:mb-12">
+            Schedule a personalized demo to learn how Q Studio's Mind Skills Training can help your
+            <br /> organization and employees.
           </h3>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormInputField id="firstName" label="First Name" type="text" placeholder="First Name" />
+          <form className="space-y-6">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <FormInputField
+                id="firstName"
+                label="First Name"
+                type="text"
+                placeholder="First Name"
+              />
               <FormInputField id="lastName" label="Last Name" type="text" placeholder="Last Name" />
-              <FormInputField id="emailAddress" label="Email" type="email" placeholder="Email Address" />
-              <FormInputField id="mobileNumber" label="Mobile" type="tel" placeholder="Mobile Number" />
-              <FormInputField id="companyName" label="Company" type="text" placeholder="Company Name" />
+              <FormInputField
+                id="emailAddress"
+                label="Email"
+                type="email"
+                placeholder="Email Address"
+              />
+              <FormInputField
+                id="mobileNumber"
+                label="Mobile"
+                type="tel"
+                placeholder="Mobile Number"
+              />
+              <FormInputField
+                id="companyName"
+                label="Company"
+                type="text"
+                placeholder="Company Name"
+              />
               <FormSelectField id="industry" label="Industry" options={industryOptions} />
               <FormSelectField id="function" label="Function" options={functionOptions} />
-              <FormSelectField id="employeeCount" label="Employees" options={employeeCountOptions} />
+              <FormSelectField
+                id="employeeCount"
+                label="Employees"
+                options={employeeCountOptions}
+              />
             </div>
 
-            <div className="w-full flex lg:justify-center pt-14">
+            <div className="flex w-full pt-14 lg:justify-center">
               <button
                 type="submit"
-                className="py-4 px-7 bg-[#71604D] font-medium text-2xl text-[#C7C2BB] rounded-full transition duration-300 ease-in-out select-none"
+                className="rounded-full bg-[#71604D] px-7 py-4 text-2xl font-medium text-[#C7C2BB] transition duration-300 ease-in-out select-none"
               >
                 Submit
               </button>
             </div>
           </form>
         </div>
-      </div>
-
-      {isSubmitted && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[60]">
-          <div className="bg-white p-8 rounded-xl shadow-2xl max-w-sm w-full text-center">
-            <h3 className="text-xl font-semibold text-teal-800 mb-4">Submission Successful!</h3>
-            <p className="text-gray-600 mb-6">
-              Thank you for your interest. Your demo request has been logged.
-            </p>
-            <button
-              onClick={() => { setIsSubmitted(false); onClose(); }}
-              className="bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-6 rounded-lg transition duration-200"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+      </LazyBackground>
     </div>
   );
 };
 
-
 const WellAbove = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
+  const HERO = CONTENT_CONFIG.ORGANIZATION_PAGE.WELL_ABOVE.HERO;
+  const CARDS = CONTENT_CONFIG.ORGANIZATION_PAGE.WELL_ABOVE.CARDS;
+
   return (
-    <div className="h-full w-screen bg-[#F0F0F0] select-none py-16 sm:py-20 px-4 sm:px-8 md:px-10 lg:px-20">
+    <div className="wellabove-root">
       <div className="container-custom">
-        {/* Heading */}
-        <div className="flex flex-col xl:items-center justify-center xl:px-8 xl:text-center">
+        <div className="wellabove-heading-wrapper">
           <h2
-            className="font-sans !font-bold sm:font-normal xl:text-[40px] lg:text-[28px] sm:text-2xl md:text-[28px] text-2xl !leading-[100%] !tracking-wide text-teal-900"
-            dangerouslySetInnerHTML={{
-              __html:
-                "The WellAbove Program<br/>A training program for your entire organization.",
-            }}
+            className="wellabove-heading-primary"
+            dangerouslySetInnerHTML={{ __html: HERO.HEADING.join("<br/>") }}
           ></h2>
           <h6
-            className="xl:text-[26px] lg:text-[18px] sm:text-[20px] md:text-[20px] text-gray-800 xl:text-center xl:max-w-6xl xl:mx-auto mt-5 xl:font-normal !lg:font-normal"
-            dangerouslySetInnerHTML={{
-              __html:
-                "Technical skills are not enough to navigate complexities facing the workforce.<br/>Equipping Talent with Mind Skills for mental clarity, emotional regulation, and resilience<br/>is necessary for performance and growth.",
-            }}
+            className="wellabove-sub-heading"
+            dangerouslySetInnerHTML={{ __html: HERO.SUB_HEADING.join("<br/>") }}
           ></h6>
         </div>
 
-        <div className="py-10">
-          <div className="flex flex-col xl:flex-row xl:justify-center gap-6 xl:px-6">
-            <div className="flex flex-col gap-6 w-full xl:w-1/2">
-              {/* Feature 1 */}
-              <div className="border-white border rounded-4xl p-5 flex items-start gap-4 h-full">
-                <div className="flex-shrink-0 w-24 sm:w-28 md:w-32 lg:w-36">
-                  <img
-                    src="/media/organizations/upskill1.png"
-                    alt="A shift from risk-reduction to competence-enhancement."
-                    className="w-full h-auto object-cover rounded-xl select-none"
-                  />
+        <div className="wellabove-cards-section">
+          <div className="wellabove-cards-wrapper">
+            <div className="wellabove-cards-column">
+              {CARDS.filter((_, i) => i % 2 === 0).map((card, idx) => (
+                <div key={idx} className="wellabove-card">
+                  <div className="wellabove-card-img-wrapper">
+                    <LazyImage
+                      src={card.img}
+                      alt={card.title}
+                      className="wellabove-card-img"
+                    />
+                  </div>
+                  <div className="wellabove-card-content">
+                    <h4 className="wellabove-card-title">{card.title}</h4>
+                    <h3 className="wellabove-card-desc">{card.desc}</h3>
+                  </div>
                 </div>
-                <div className="flex-grow flex flex-col text-left">
-                  <h4 className="text-xl font-bold text-teal-900">
-                    A shift from risk-reduction to competence-enhancement.
-                  </h4>
-                  <h3 className="text-gray-600 text-lg mt-2">
-                    Improve work performance by enhancing cognitive competencies
-                    rather than solely relying on resources for detection and
-                    treatment of mental illness.
-                  </h3>
-                </div>
-              </div>
-
-
-              <div className="border-white border rounded-4xl p-5 flex items-start gap-4 h-full">
-                <div className="flex-shrink-0 w-24 sm:w-28 md:w-32 lg:w-36">
-                  <img
-                    src="/media/organizations/upskill3.png"
-                    alt="Transform learning into sustainable changes."
-                    className="w-full h-auto object-cover rounded-xl select-none"
-                  />
-                </div>
-                <div className="flex-grow flex flex-col text-left">
-                  <h4 className="text-xl font-bold text-teal-900">
-                    Transform learning into sustainable changes.
-                  </h4>
-                  <h3 className="text-gray-600 text-lg mt-2">
-                    A self-paced learning experience along with expert guidance
-                    on workplace applicability helps employees turn learning new
-                    skills into lasting workplace changes.
-                  </h3>
-                </div>
-              </div>
+              ))}
             </div>
 
-            <div className="flex flex-col gap-6 w-full xl:w-1/2">
-
-              <div className="border-white border rounded-4xl p-5 flex items-start gap-4 h-full">
-                <div className="flex-shrink-0 w-24 sm:w-28 md:w-32 lg:w-36">
-                  <img
-                    src="/media/organizations/upskill2.png"
-                    alt="So affordable you can roll-it out to the whole company."
-                    className="w-full h-auto object-cover rounded-xl select-none"
-                  />
+            <div className="wellabove-cards-column">
+              {CARDS.filter((_, i) => i % 2 === 1).map((card, idx) => (
+                <div key={idx} className="wellabove-card">
+                  <div className="wellabove-card-img-wrapper">
+                    <LazyImage
+                      src={card.img}
+                      alt={card.title}
+                      className="wellabove-card-img"
+                    />
+                  </div>
+                  <div className="wellabove-card-content">
+                    <h4 className="wellabove-card-title">{card.title}</h4>
+                    <h3 className="wellabove-card-desc">{card.desc}</h3>
+                  </div>
                 </div>
-                <div className="flex-grow flex flex-col text-left">
-                  <h4 className="text-xl font-bold text-teal-900">
-                    So affordable you can roll-it out to the whole company.
-                  </h4>
-                  <h3 className="text-gray-600 text-lg mt-2">
-                    Learning Mind Skills with Q Studio is at a fraction of the
-                    cost as compared to the average corporate training cost.
-                  </h3>
-                </div>
-              </div>
-
-
-              <div className="border-white border rounded-4xl p-5 flex items-start gap-4 h-full">
-                <div className="flex-shrink-0 w-24 sm:w-28 md:w-32 lg:w-36">
-                  <img
-                    src="/media/organizations/upskill4.png"
-                    alt="The program pays for itself."
-                    className="w-full h-auto object-cover rounded-xl select-none"
-                  />
-                </div>
-                <div className="flex-grow flex flex-col text-left">
-                  <h4 className="text-xl font-bold text-teal-900">
-                    The program pays for itself.
-                  </h4>
-                  <h3 className="text-gray-600 text-lg mt-2">
-                    Quantitative and qualitative data demonstrates the ROI and
-                    impact on business metrics.
-                  </h3>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
 
-
-        <div className="flex justify-center pt-3">
-          <button
-            onClick={toggleModal}
-            className="cursor-pointer py-3 px-6 sm:py-5 sm:px-6 
-                       bg-[#50418C] hover:bg-[#7B6CB9] 
-                       text-base sm:text-lg md:text-xl lg:text-2xl 
-                       font-medium text-white rounded-full 
-                       transition duration-300 ease-in-out"
-          >
-            Schedule a Demo
+        <div className="wellabove-button-wrapper">
+          <button onClick={toggleModal} className="wellabove-button">
+            {HERO.BUTTON_PRIMARY.TEXT}
           </button>
         </div>
       </div>
-
 
       {isModalOpen && <Form isOpen={isModalOpen} onClose={toggleModal} />}
     </div>

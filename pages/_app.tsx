@@ -1,8 +1,16 @@
 import "@/styles/globals.css";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import "react-loading-skeleton/dist/skeleton.css";
+
 import Footer from "@/components/common/Footer";
 import type { AppProps } from "next/app";
 import { preloadImages } from "@/utils/preloadImages";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import BackToTopButton from "@/components/common/BackToTopButton";
+import SkeletonLoader from "@/components/common/SkeletonLoader";
+
 const images = [
   "/media/bgs/individual_bg.webp",
   "/media/bgs/landing_bg.webp",
@@ -11,13 +19,31 @@ const images = [
 ];
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
-    preloadImages(images);
+    const loadSite = async () => {
+      try {
+        await preloadImages(images);
+        setTimeout(() => setIsLoading(false), 500);
+      } catch {
+        setIsLoading(false);
+      }
+    };
+    loadSite();
   }, []);
+
   return (
     <>
-      <Component {...pageProps} />
-      <Footer />
+      {isLoading ? (
+        <SkeletonLoader />
+      ) : (
+        <>
+          <Component {...pageProps} />
+          <Footer />
+          <BackToTopButton />
+        </>
+      )}
     </>
   );
 }
