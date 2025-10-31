@@ -1,13 +1,24 @@
+import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { DOWNLOAD_LINKS } from "../constants/downloadLinks";
 
 const MindSkills = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [downloadLink, setDownloadLink] = useState<string>("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const userAgent = window.navigator.userAgent;
+      if (userAgent.includes("Mac")) setDownloadLink(DOWNLOAD_LINKS.macos);
+      else if (userAgent.includes("Win")) setDownloadLink(DOWNLOAD_LINKS.windows);
+      else setDownloadLink(DOWNLOAD_LINKS.windows);
+    }
+  }, []);
 
   return (
     <div className="min-h-[85vh] w-screen bg-[#F0F0F0] select-none flex flex-col justify-center py-16 sm:py-20 px-4 sm:px-8 md:px-10 lg:px-20">
@@ -26,7 +37,7 @@ const MindSkills = () => {
 
         <div className="flex lg:justify-center h-auto pt-10 ">
           <a
-            href="https://apps.apple.com/in/app/id6621264428"
+            href={downloadLink || "#"}
             target="_blank"
             rel="noopener noreferrer"
             className="!py-6 !px-9 bg-red-700 hover:bg-[var(--color-red-hover)] font-medium text-2xl antialiased text-white rounded-full transition duration-300 ease-in-out select-none"

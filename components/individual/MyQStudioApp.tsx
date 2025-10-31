@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSpring, animated } from "@react-spring/web";
+import { DOWNLOAD_LINKS } from "../constants/downloadLinks";
 
 interface ScreenData {
   header: string;
@@ -123,6 +124,7 @@ interface DynamicPhoneMockupProps {
 const DynamicPhoneMockup: React.FC<DynamicPhoneMockupProps> = ({
   activeScreenId,
 }) => {
+
   return (
     <div className="flex justify-center items-center relative w-full h-full lg:h-[700px] xl:h-[800px]">
       <div className="relative w-64 h-[550px] md:w-80 md:h-[680px] lg:w-[320px] lg:h-[690px] xl:w-[380px] xl:h-[700px] overflow-hidden flex items-center justify-center">
@@ -163,6 +165,16 @@ const DynamicPhoneMockup: React.FC<DynamicPhoneMockupProps> = ({
 const MyQStudio: React.FC = () => {
   const [activeFeatureId, setActiveFeatureId] = useState<ScreenKey>(1);
   const [isMobileView, setIsMobileView] = useState<boolean>(false);
+  const [downloadLink, setDownloadLink] = useState<string>("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const userAgent = window.navigator.userAgent;
+      if (userAgent.includes("Mac")) setDownloadLink(DOWNLOAD_LINKS.macos);
+      else if (userAgent.includes("Win")) setDownloadLink(DOWNLOAD_LINKS.windows);
+      else setDownloadLink(DOWNLOAD_LINKS.windows);
+    }
+  }, []);
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -199,7 +211,7 @@ const MyQStudio: React.FC = () => {
             </h6>
             <div className="flex lg:justify-center h-auto pt-10 ">
               <a
-                href="https://apps.apple.com/in/app/id6621264428"
+                href={downloadLink || "#"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="!py-6 !px-9 bg-red-700 hover:bg-[var(--color-red-hover)] font-medium text-2xl antialiased text-white rounded-full transition duration-300 ease-in-out select-none"
@@ -253,18 +265,16 @@ const MyQStudio: React.FC = () => {
                       </div>
                       <div className="max-w-5xl">
                         <h3
-                          className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold transition-all duration-300 ease-in-out ${
-                            isActive ? "text-teal-900 mb-2" : "text-teal-800"
-                          }`}
+                          className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold transition-all duration-300 ease-in-out ${isActive ? "text-teal-900 mb-2" : "text-teal-800"
+                            }`}
                         >
                           {feature.title}
                         </h3>
                         <h4
-                          className={`font-normal transition-[max-height,opacity,margin-top] duration-500 ease-in-out overflow-hidden ${
-                            isActive
-                              ? "text-xl lg:text-2xl text-gray-800 max-h-40 mt-5 mb-5 opacity-100"
-                              : "text-base text-gray-600 max-h-0 mt-0 opacity-0"
-                          }`}
+                          className={`font-normal transition-[max-height,opacity,margin-top] duration-500 ease-in-out overflow-hidden ${isActive
+                            ? "text-xl lg:text-2xl text-gray-800 max-h-40 mt-5 mb-5 opacity-100"
+                            : "text-base text-gray-600 max-h-0 mt-0 opacity-0"
+                            }`}
                         >
                           {feature.detail}
                         </h4>
@@ -282,9 +292,8 @@ const MyQStudio: React.FC = () => {
             {UPDATED_FEATURES.map((feature) => (
               <span
                 key={feature.id}
-                className={`block w-3 h-3 rounded-full cursor-pointer transition-colors duration-300 ${
-                  feature.id === activeFeatureId ? "bg-teal-900" : "bg-gray-400"
-                }`}
+                className={`block w-3 h-3 rounded-full cursor-pointer transition-colors duration-300 ${feature.id === activeFeatureId ? "bg-teal-900" : "bg-gray-400"
+                  }`}
                 onClick={() => setActiveFeatureId(feature.id)}
               ></span>
             ))}

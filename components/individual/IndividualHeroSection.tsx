@@ -1,6 +1,18 @@
+import React, { useEffect, useState } from "react";
 import Header from "../common/Header";
+import { DOWNLOAD_LINKS } from "../constants/downloadLinks";
 
 const HeroSection = () => {
+  const [downloadLink, setDownloadLink] = useState<string>("");
+  
+    useEffect(() => {
+      if (typeof window !== "undefined") {
+        const userAgent = window.navigator.userAgent;
+        if (userAgent.includes("Mac")) setDownloadLink(DOWNLOAD_LINKS.macos);
+        else if (userAgent.includes("Win")) setDownloadLink(DOWNLOAD_LINKS.windows);
+        else setDownloadLink(DOWNLOAD_LINKS.windows);
+      }
+    }, []);
   return (
     <div
       className="min-h-screen h-full w-screen bg-cover bg-center"
@@ -67,7 +79,7 @@ const HeroSection = () => {
 
             <div className="center-v h-auto pt-14 pb-12">
               <a
-                href="#"
+                href={downloadLink || "#"}
                 className="!py-4 !px-7 bg-white hover:bg-white-hover font-medium text-2xl antialiased text-[#B8543D] rounded-full transition duration-300 ease-in-out"
               >
                 Try for Free

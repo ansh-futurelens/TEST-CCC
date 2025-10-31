@@ -1,4 +1,3 @@
-import Header from "../common/Header";
 import React, { useState, useRef, useEffect } from "react";
 
 
@@ -120,39 +119,6 @@ const Form: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onCl
 
   if (!isOpen) return null;
 
-  const industryOptions: SelectOption[] = [
-    { value: "education", label: "Education" },
-    { value: "healthcare", label: "Healthcare" },
-    { value: "manufacturing", label: "Manufacturing" },
-    { value: "retail", label: "Retail" },
-    { value: "technology", label: "Technology" },
-    { value: "banking_finance", label: "Banking & Finance" },
-    { value: "hospitality", label: "Hospitality" },
-    { value: "media", label: "Media" },
-    { value: "transportation", label: "Transportation" },
-    { value: "government", label: "Government" },
-    { value: "professional_services", label: "Professional Services" },
-  ];
-
-  const functionOptions: SelectOption[] = [
-    { value: "function", label: "Function" },
-    { value: "talent", label: "Talent" },
-    { value: "sales_marketing", label: "Sales & Marketing" },
-    { value: "operations", label: "Operations" },
-    { value: "legal_compliance", label: "Legal & Compliance" },
-    { value: "production", label: "Production" },
-    { value: "it", label: "Information Technology" },
-  ];
-
-  const employeeCountOptions: SelectOption[] = [
-    { value: "", label: "Number of Employees" },
-    { value: "1-50", label: "1-50" },
-    { value: "51-500", label: "51-500" },
-    { value: "501-2000", label: "501-2000" },
-    { value: "2001-5000", label: "2001-5000" },
-    { value: "5000+", label: "5000+" },
-  ];
-
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/40 flex items-center justify-center p-4">
       <div
@@ -182,11 +148,10 @@ const Form: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onCl
 
         <div className="backdrop-blur-md rounded-4xl p-6 sm:p-10 md:p-12 w-full">
           <h2 className="text-4xl font-bold text-center text-white mb-6">
-            Experience the impact for yourself!
+            Team Registration
           </h2>
           <h3 className="text-white mb-8 md:mb-12 max-w-7xl mx-auto text-2xl text-center">
-            Schedule a personalized demo to learn how Q Studio's Mind Skills
-            Training can help your<br /> organization and employees.
+            Are you ready to elevate your team's performance through the power of Mind Skills? Our comprehensive team training program is launching soon. Registration is now open!
           </h3>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -194,11 +159,8 @@ const Form: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onCl
               <FormInputField id="firstName" label="First Name" type="text" placeholder="First Name" />
               <FormInputField id="lastName" label="Last Name" type="text" placeholder="Last Name" />
               <FormInputField id="emailAddress" label="Email" type="email" placeholder="Email Address" />
-              <FormInputField id="mobileNumber" label="Mobile" type="tel" placeholder="Mobile Number" />
-              <FormInputField id="companyName" label="Company" type="text" placeholder="Company Name" />
-              <FormSelectField id="industry" label="Industry" options={industryOptions} />
-              <FormSelectField id="function" label="Function" options={functionOptions} />
-              <FormSelectField id="employeeCount" label="Employees" options={employeeCountOptions} />
+              <FormInputField id="companyname" label="Company" type="text" placeholder="Company Name" />
+              <FormInputField id="members" label="members" type="text" placeholder="Number Of Team Members" />
             </div>
 
             <div className="w-full flex lg:justify-center pt-14">
@@ -206,7 +168,7 @@ const Form: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onCl
                 type="submit"
                 className="py-4 px-7 bg-[#71604D] font-medium text-2xl text-[#C7C2BB] rounded-full transition duration-300 ease-in-out select-none"
               >
-                Submit
+                Register
               </button>
             </div>
           </form>
@@ -233,116 +195,61 @@ const Form: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onCl
   );
 };
 
-
-const OrganizartionHeroSection = () => {
+const CollaborateSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
   return (
-    <div
-      className="min-h-screen h-full w-screen bg-cover bg-center"
-      style={{
-        backgroundImage: "url('/media/bgs/organizations_bg.webp')",
-      }}
-    >
-      <div className="container-custom">
-        <Header
-          bgColor=""
-          textColor="#FFFFFF"
-          activeBgColor="#6f63a0"
-          activeTextColor="#FFFFFF"
-          hoverBgColor="#6f63a0"
-          hoverTextColor="#FFFFFF"
-          buttonBgColor="#FBB040"
-          buttonHoverColor="#d29a5e"
-        />
-        <div
-          className="
-            pt-20 lg:pt-24 xl:pt-32
-            flex flex-col xl:flex-row
-            h-auto xl:h-[80vh]
-            items-start
-            gap-8 xl:gap-16
-            pb-16
-          "
-        >
-          <div
-            className="
-              w-full xl:w-[68%]
-              h-auto
-              text-left
-            "
-          >
-            <div
-              className="
-                pt-15
-                h-auto
-                max-w-full
-                select-none
-              "
-            >
-              <h1
-                className="
-                  !font-sans !font-bold !text-white
-                  text-3xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl
-                  leading-snug sm:leading-tight lg:leading-tight
-                "
-              >
-                Channel human capacity <br /> into unstoppable growth.
-              </h1>
-              <h2
-                className="
-                  font-medium sm:font-seminormal
-                  text-base sm:text-lg lg:text-xl xl:text-2xl
-                  leading-normal tracking-normal
-                  text-white !mt-8
-                "
-                style={{ fontFamily: "Figtree, sans-serif" }}
-              >
-                Tap into the full potential of your entire organization and
-                unlock
-                <br />
-                levels of growth and innovation never seen before - all driven
-                by
-                <br />
-                highly-engaged, balanced, and resilient employees.
-              </h2>
-            </div>
+    <div className="relative w-screen select-none bg-gray-50">
+      <div className="relative container-custom py-16 sm:py-20 px-4 sm:px-8 md:px-10 lg:px-20">
+        <div className="flex flex-col items-center 2xl:items-start justify-between gap-10 2xl:flex-row-reverse">
+          <div className="flex flex-col 2xl:w-[60%] xl:pt-20 lg:pt-10 pt-10 z-10">
+            <h2 className="font-sans !font-bold text-2xl sm:text-2xl text-teal-900 2xl:text-[30px] 3xl:text-[40px] 2xl:text-start lg:text-center">
+              Collaborate, Innovate, Excel - Together.
+            </h2>
 
-            <div className="center-v h-auto pt-14 pb-12">
+            <h6 className="mt-8 2xl:text-[22px] xl:text-[20px] lg:text-[18px] text-gray-800 2xl:text-start lg:text-center xl:max-w-6xl xl:mx-auto">
+              Teams that are mentally fit have higher engagement for a common
+              goal, develop strong interpersonal bonds, create an environment
+              where innovation flourishes, and recover from setbacks faster,
+              together.
+            </h6>
+
+            <div className="flex flex-col lg:flex-col 2xl:flex-row lg:items-center 2xl:items-start justify-start lg:justify-center 2xl:justify-start items-start xl:mt-16 lg:mt-10 mt-6 gap-6 xl:items-center">
               <a
-                className="!py-4 !px-7 bg-white hover:bg-white-hover font-medium text-2xl antialiased text-[#4F418C] rounded-full transition duration-300 ease-in-out"
+
+                target="_blank"
+                rel="noopener noreferrer"
+                className="py-4 px-7 bg-teal-900 hover:bg-teal-800 font-medium text-2xl text-white rounded-full transition duration-300 ease-in-out select-none"
                 onClick={toggleModal}
               >
-                Schedule a Demo
+                Get Started
+              </a>
+
+              <a
+                href="/teams"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-lg md:text-xl 2xl:text-2xl text-gray-800 hover:text-teal-900 border-b border-gray-800 transition duration-300 ease-in-out lg:self-center"
+              >
+                Explore more
               </a>
             </div>
           </div>
 
-          <div
-            className="
-    w-full xl:w-[30%]
-    h-auto
-    flex justify-start items-start
-    xl:mt-0
-  "
-          >
+          <div className="flex justify-center 2xl:w-[40%] select-none">
             <img
-              src="/media/organizations/organizations.png"
-              alt="Landing Girl"
-              className="
-      w-full h-auto object-contain
-      max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-full 2xl:max-w-full
-      mt-6  // Added slight bottom padding by moving image down
-      
-    "
+              src="/media/landing/collabrate.png"
+              alt="Collaborate Illustration"
+              className="w-[500px] max-w-full h-auto object-contain"
             />
           </div>
         </div>
       </div>
       {isModalOpen && <Form isOpen={isModalOpen} onClose={toggleModal} />}
+
     </div>
   );
 };
 
-export default OrganizartionHeroSection;
+export default CollaborateSection;

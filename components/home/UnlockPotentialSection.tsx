@@ -1,4 +1,3 @@
-import Header from "../common/Header";
 import React, { useState, useRef, useEffect } from "react";
 
 
@@ -234,108 +233,58 @@ const Form: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onCl
 };
 
 
-const OrganizartionHeroSection = () => {
+const UnlockPotentialSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
   return (
-    <div
-      className="min-h-screen h-full w-screen bg-cover bg-center"
-      style={{
-        backgroundImage: "url('/media/bgs/organizations_bg.webp')",
-      }}
-    >
-      <div className="container-custom">
-        <Header
-          bgColor=""
-          textColor="#FFFFFF"
-          activeBgColor="#6f63a0"
-          activeTextColor="#FFFFFF"
-          hoverBgColor="#6f63a0"
-          hoverTextColor="#FFFFFF"
-          buttonBgColor="#FBB040"
-          buttonHoverColor="#d29a5e"
-        />
-        <div
-          className="
-            pt-20 lg:pt-24 xl:pt-32
-            flex flex-col xl:flex-row
-            h-auto xl:h-[80vh]
-            items-start
-            gap-8 xl:gap-16
-            pb-16
-          "
-        >
-          <div
-            className="
-              w-full xl:w-[68%]
-              h-auto
-              text-left
-            "
-          >
-            <div
-              className="
-                pt-15
-                h-auto
-                max-w-full
-                select-none
-              "
-            >
-              <h1
-                className="
-                  !font-sans !font-bold !text-white
-                  text-3xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl
-                  leading-snug sm:leading-tight lg:leading-tight
-                "
-              >
-                Channel human capacity <br /> into unstoppable growth.
-              </h1>
-              <h2
-                className="
-                  font-medium sm:font-seminormal
-                  text-base sm:text-lg lg:text-xl xl:text-2xl
-                  leading-normal tracking-normal
-                  text-white !mt-8
-                "
-                style={{ fontFamily: "Figtree, sans-serif" }}
-              >
-                Tap into the full potential of your entire organization and
-                unlock
-                <br />
-                levels of growth and innovation never seen before - all driven
-                by
-                <br />
-                highly-engaged, balanced, and resilient employees.
-              </h2>
-            </div>
+    <div className="relative w-screen select-none bg-gray-bg">
+      <div className="relative container-custom py-16 sm:py-20 px-4 sm:px-8 md:px-10 lg:px-20">
+        <div className="flex flex-col items-center 2xl:items-start justify-between gap-10 2xl:flex-row">
+          <div className="flex flex-col 2xl:w-[60%] xl:pt-20 lg:pt-10 pt-10 z-10">
+            <h2 className="font-sans !font-bold text-2xl sm:text-2xl text-teal-900 2xl:text-[30px] 3xl:text-[40px] 2xl:text-start lg:text-center">
+              Unlock the full potential of your organization.
+            </h2>
 
-            <div className="center-v h-auto pt-14 pb-12">
+            <h6 className="mt-8 2xl:text-[22px] xl:text-[20px] lg:text-[18px] text-gray-800 2xl:text-start lg:text-center xl:max-w-6xl xl:mx-auto">
+              In today's rapidly evolving business landscape, technical skills
+              alone are no longer sufficient for growth. Organizations need to
+              invest in upskilling employees with Mind Skills to navigate
+              complexities, drive innovation, and adapt to change.
+            </h6>
+
+            <h6 className="mt-4 2xl:text-[22px] xl:text-[20px] lg:text-[18px] text-gray-800 2xl:text-start lg:text-center">
+              Find out how Q Studio’s business solutions can help you unlock
+              growth.
+            </h6>
+
+            <div className="flex flex-col lg:flex-col 2xl:flex-row lg:items-center 2xl:items-start justify-start lg:justify-center 2xl:justify-start items-start xl:mt-16 lg:mt-10 mt-6 gap-6 xl:items-center">
               <a
-                className="!py-4 !px-7 bg-white hover:bg-white-hover font-medium text-2xl antialiased text-[#4F418C] rounded-full transition duration-300 ease-in-out"
+
+                target="_blank"
+                rel="noopener noreferrer"
+                className="py-4 px-7 bg-teal-900 hover:bg-teal-800 font-medium text-2xl text-white rounded-full transition duration-300 ease-in-out select-none"
                 onClick={toggleModal}
               >
                 Schedule a Demo
               </a>
+
+              <a
+                href="/organizations"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-lg md:text-xl 2xl:text-2xl text-gray-800 hover:text-teal-900 border-b border-gray-800 transition duration-300 ease-in-out lg:self-center"
+              >
+                Check out our solutions
+              </a>
             </div>
           </div>
 
-          <div
-            className="
-    w-full xl:w-[30%]
-    h-auto
-    flex justify-start items-start
-    xl:mt-0
-  "
-          >
+          <div className="flex justify-center 2xl:w-[40%] select-none">
             <img
-              src="/media/organizations/organizations.png"
-              alt="Landing Girl"
-              className="
-      w-full h-auto object-contain
-      max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-full 2xl:max-w-full
-      mt-6  // Added slight bottom padding by moving image down
-      
-    "
+              src="/media/landing/unlock.png"
+              alt="Unlock Potential Illustration"
+              className="w-[500px] max-w-full h-auto object-contain"
             />
           </div>
         </div>
@@ -345,4 +294,4 @@ const OrganizartionHeroSection = () => {
   );
 };
 
-export default OrganizartionHeroSection;
+export default UnlockPotentialSection;

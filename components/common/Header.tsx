@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/router";
 
 interface HeaderProps {
   bgColor?: string;
@@ -28,12 +29,20 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  
+  useEffect(() => {
+    router.prefetch("/aboutus");
+    router.prefetch("/individual");
+    router.prefetch("/organizations");
+    router.prefetch("/teams");
+  }, [router]);
 
   const menuItems = [
     { name: "Individuals", href: "/individual" },
     { name: "Teams", href: "/teams" },
     { name: "Organizations", href: "/organizations" },
-    { name: "About Us", href: "/about" },
+    { name: "About Us", href: "/aboutus" },
     { name: "Resources", href: "/resources" },
   ];
 

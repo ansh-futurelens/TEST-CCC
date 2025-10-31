@@ -1,33 +1,21 @@
-import React, { useEffect, useState } from "react";
 import Header from "../common/Header";
-import { DOWNLOAD_LINKS } from "../constants/downloadLinks";
 
-const HeroSection = () => {
-  const [downloadLink, setDownloadLink] = useState<string>("");
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const userAgent = window.navigator.userAgent;
-      if (userAgent.includes("Mac")) setDownloadLink(DOWNLOAD_LINKS.macos);
-      else if (userAgent.includes("Win")) setDownloadLink(DOWNLOAD_LINKS.windows);
-      else setDownloadLink(DOWNLOAD_LINKS.windows);
-    }
-  }, []);
+const AboutUsHeroSection = () => {
   return (
     <div
       className="min-h-screen h-full w-screen bg-cover bg-center"
-      style={{ backgroundImage: "url('/media/bgs/landing_bg.webp')" }}
+      style={{ backgroundImage: "url('/media/about_us/about_us_bg.png')" }}
     >
       <div className="container-custom">
-        <Header
+  <Header
           bgColor=""
           textColor="#FFFFFF"
-          activeBgColor="#02514B"
+          activeBgColor="#FFC25E"
           activeTextColor="#FFFFFF"
-          hoverBgColor="#30706b"
+          hoverBgColor="#FFC25E"
           hoverTextColor="#FFFFFF"
-          buttonBgColor="#b8543d"
-          buttonHoverColor="#e5684c"
+          buttonBgColor="#02514B"
+          buttonHoverColor="#007c74"
         />
         <div
           className="
@@ -60,22 +48,10 @@ const HeroSection = () => {
                   text-3xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl
                   leading-snug sm:leading-tight lg:leading-tight
                 "
-                style={{ fontFamily: "Figtree, sans-serif" }}
               >
-                Excel in a world of <br />
-                constant change
+                clear thoughts.
+
               </h1>
-              <h2
-                className="
-                  font-sans font-bold sm:font-normal
-                  text-lg sm:text-xl lg:text-2xl xl:text-3xl
-                  leading-normal tracking-normal
-                  text-yellow-600 !mt-6
-                "
-                style={{ fontFamily: "Figtree, sans-serif" }}
-              >
-                Transform limitations into possibilities
-              </h2>
               <h2
                 className="
                   font-medium sm:font-seminormal
@@ -85,22 +61,15 @@ const HeroSection = () => {
                 "
                 style={{ fontFamily: "Figtree, sans-serif" }}
               >
-                Get MyQstudio - the only Mind Skills app for peak performance.
-                <br />
-                Think, Feel, Do - Better
+                Revolutionizing mental fitness by making<br/>proven strategies and techniques accessible<br/>
+                worldwide, empowering everyone to build the<br/>
+                mental strength needed for peak performance,<br/>
+                meaningful connections, and a deeply fulfilling<br/>life.
+
               </h2>
             </div>
 
-            <div className="pt-14 pb-12 flex justify-start">
-              <a
-                href={downloadLink || "#"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="py-4 px-7 bg-white text-teal-900 font-medium text-xl rounded-full transition duration-300 ease-in-out hover:bg-gray-200"
-              >
-                Try for Free
-              </a>
-            </div>
+
           </div>
 
           <div
@@ -112,7 +81,8 @@ const HeroSection = () => {
   "
           >
             <img
-              src="/media/landing/landing_girl.png"
+              src="/media/about_us/about_us_heading.png"
+
               alt="Landing Girl"
               className="
       w-full h-auto object-contain
@@ -121,10 +91,11 @@ const HeroSection = () => {
     "
             />
           </div>
+
         </div>
       </div>
     </div>
   );
 };
 
-export default HeroSection;
+export default AboutUsHeroSection;
