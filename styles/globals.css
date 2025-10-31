@@ -1,8 +1,8 @@
 /*-----------------------------------------
   1. Import Assets
 ------------------------------------------*/
+@import url("https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap");
 @import "tailwindcss";
-@import "./components.css";
 
 /*-----------------------------------------
   Global Assets
@@ -31,7 +31,6 @@
   /* Orange Shades */
   --color-orange-600: #f7941d;
   --color-orange-500: #fbb040;
-  --color-orange-active-hover: #c57260;
 
   /* Green Shades */
   --color-green-500: #81c2a3;
@@ -106,6 +105,7 @@ html {
 }
 
 body {
+  font-family: "Figtree", sans-serif !important;
   font-size: 16px;
   line-height: normal;
   overflow-x: hidden !important;
@@ -113,39 +113,12 @@ body {
   -khtml-user-drag: none;
   -moz-user-drag: none;
   -o-user-drag: none;
+  user-drag: none;
 }
 
 /*-----------------------------------------
   4. Typography Defaults
 ------------------------------------------*/
-:root {
-  --font-primary: "Figtree", sans-serif;
-}
-
-html,
-body {
-  font-family: var(--font-primary);
-  font-optical-sizing: auto;
-
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-span,
-a,
-li,
-button,
-input,
-textarea {
-  font-family: var(--font-primary);
-  font-optical-sizing: auto;
-
-}
 
 a {
   text-decoration: none;
@@ -163,6 +136,31 @@ hr {
 /*-----------------------------------------
   5. Typography Scale
 ------------------------------------------*/
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+a,
+li,
+ul,
+ol,
+strong,
+em,
+blockquote,
+label,
+input,
+button,
+textarea,
+small,
+code {
+  font-family: "Figtree", sans-serif;
+}
+
 /* Descriptions Texts */
 .description-1 {
   font-size: 28px;
@@ -204,9 +202,7 @@ p {
   font-size: 14px;
   font-weight: 400;
 }
-.very-bolder{
-    font-weight: 1000 !important;
-}
+
 /*-----------------------------------------
   6. Utility Classes
 ------------------------------------------*/
@@ -443,23 +439,29 @@ p {
 
 @keyframes smooth-fade-cycle {
   0% {
-    opacity: 0;
+    opacity: 0; /* Start completely transparent */
   }
   15% {
-    opacity: 1;
+    opacity: 1; /* Fade in over the first 15% of the animation duration */
   }
   85% {
-    opacity: 1;
+    opacity: 1; /* Stay fully opaque until 85% of the animation duration */
   }
   100% {
-    opacity: 0;
+    opacity: 0; /* Fade out over the last 15% of the animation duration */
   }
 }
 
 .animated-blink-text {
+  /* Set the animation duration to control how long each phrase is visible */
+  /* For example, if you want each phrase to be visible for 3 seconds, set it here. */
   animation: smooth-fade-cycle 3s infinite;
+  /* You can adjust the timing function if you want a different feel, e.g., ease-in-out */
   animation-timing-function: ease-in-out;
+
+  /* Start invisible to prevent initial flash, the animation will handle the fade-in */
   opacity: 0;
+  /* Ensure transitions are smooth even if other properties change (though here mainly animation handles it) */
   transition: opacity 0.3s ease-in-out;
 }
 
@@ -476,69 +478,4 @@ p {
 .custom-pagination .swiper-pagination-bullet-active {
   background-color: #02514b;
   transition: all 0.3s;
-}
-.mindskills-pagination .swiper-pagination-bullet {
-  width: 12px;
-  height: 12px;
-  background-color: #9d9e9d;
-  opacity: 1;
-  margin: 10px 8px !important;
-  border-radius: 50%;
-  transition: all 0.3s;
-}
-.mindskills-pagination .swiper-pagination-bullet-active {
-  background-color: #02514b;
-  transition: all 0.3s;
-}
-.whatneed-pagination .swiper-pagination-bullet {
-  width: 12px;
-  height: 12px;
-  background-color: #9d9e9d;
-  opacity: 1;
-  margin: 10px 8px !important;
-  border-radius: 50%;
-  transition: all 0.3s;
-}
-.whatneed-pagination .swiper-pagination-bullet-active {
-  background-color: #02514b;
-  transition: all 0.3s;
-}
-
-/* Fade-in for <img> */
-.lazy-fade-in {
-  opacity: 0;
-  transform: scale(0.98);
-  transition:
-    opacity 0.8s ease,
-    transform 0.8s ease;
-  will-change: opacity, transform;
-}
-
-.lazy-fade-in.visible {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* Fade-in for background divs */
-.lazy-bg-fade {
-  opacity: 0;
-  transform: translateY(10px);
-  transition:
-    opacity 0.8s ease,
-    transform 0.8s ease;
-  will-change: opacity, transform;
-}
-
-.lazy-bg-fade.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-/* Override browser autofill background in Chrome/Safari */
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus,
-textarea:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0px 1000px #024e48 inset !important;
-  -webkit-text-fill-color: #ffffff !important;
-  transition: background-color 5000s ease-in-out 0s;
 }

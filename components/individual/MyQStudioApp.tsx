@@ -1,277 +1,306 @@
 import React, { useState, useEffect } from "react";
 import { useSpring, animated } from "@react-spring/web";
-import { DOWNLOAD_LINKS } from "../constants/downloadLinks";
-import { LazyImage } from "../LazyMedia";
-import { CONTENT_CONFIG } from "@/config/contentConfig";
-import { motion } from "framer-motion";
+import { CONTENT_CONFIG } from "../../config/contentConfig";
 
+interface ScreenData {
+    header: string;
+    content: React.ReactNode;
+}
 type ScreenKey = 1 | 2 | 3 | 4 | 5 | 6;
+type ScreenMap = Record<ScreenKey, ScreenData>;
+
 interface Feature {
-  id: ScreenKey;
-  title: string;
-  detail: string;
+    id: ScreenKey;
+    title: string;
+    detail: string;
 }
 
-const MOCK_SCREENS = {
-  1: {
-    header: "Pathways",
-    src: "/media/individuals/phone1.webp",
-    alt: "Pathways Screen",
-  },
-  2: {
-    header: "Quick Relief",
-    src: "/media/individuals/phone2.webp",
-    alt: "Quick Relief Screen",
-  },
-  3: {
-    header: "Mindset Power",
-    src: "/media/individuals/phone3.webp",
-    alt: "Mindset Power Screen",
-  },
-  4: {
-    header: "Journal",
-    src: "/media/individuals/phone4.webp",
-    alt: "Journal Screen",
-  },
-  5: {
-    header: "Challenge",
-    src: "/media/individuals/phone5.webp",
-    alt: "Challenge Screen",
-  },
-  6: {
-    header: "Growth",
-    src: "/media/individuals/phone6.webp",
-    alt: "Growth Screen",
-  },
+const MOCK_SCREENS: ScreenMap = {
+    1: {
+        header: "Pathways",
+        content: (
+            <img
+                src="/media/individuals/frame1.png"
+                alt="Pathways Screen"
+                className="w-full h-full object-contain"
+            />
+        ),
+    },
+    2: {
+        header: "Quick Relief",
+        content: (
+            <img
+                src="/media/individuals/frame2.png"
+                alt="Quick Relief Screen"
+                className="w-full h-full object-contain"
+            />
+        ),
+    },
+    3: {
+        header: "Mindset Power",
+        content: (
+            <img
+                src="/media/individuals/frame3.png"
+                alt="Mindset Power Screen"
+                className="w-full h-full object-contain"
+            />
+        ),
+    },
+    4: {
+        header: "Journal",
+        content: (
+            <img
+                src="/media/individuals/frame4.png"
+                alt="Journal Screen"
+                className="w-full h-full object-contain"
+            />
+        ),
+    },
+    5: {
+        header: "Challenge",
+        content: (
+            <img
+                src="/media/individuals/frame5.png"
+                alt="Challenge Screen"
+                className="w-full h-full object-contain"
+            />
+        ),
+    },
+    6: {
+        header: "Growth",
+        content: (
+            <img
+                src="/media/individuals/frame6.png"
+                alt="Growth Screen"
+                className="w-full h-full object-contain"
+            />
+        ),
+    },
 };
+
+
 const UPDATED_FEATURES: Feature[] = [
-  {
-    id: 1,
-    title: "Customized plans for growth",
-    detail:
-      "Get a personalized plan to focus on what is important to you. Take the MindFrame quiz and jump-start your growth.",
-  },
-  {
-    id: 2,
-    title: "Instant strategies for high-stress moments",
-    detail:
-      "Access short exercises to regain balance and focus when it matters the most, when you need it the most.",
-  },
-  {
-    id: 3,
-    title: "Concise lessons for fast learning",
-    detail:
-      "Master essential Mind Skills with short, science-backed lessons and practices that fit easily into your day to deliver immediate impact.",
-  },
-  {
-    id: 4,
-    title: "Guided journaling for reflection",
-    detail:
-      "Reflect on your thoughts and progress with prompted journals available in both written and audio formats.",
-  },
-  {
-    id: 5,
-    title: "Monthly Challenges to level up",
-    detail:
-      "Transform habits and build new skills through structured monthly challenges that push your cognitive boundaries.",
-  },
-  {
-    id: 6,
-    title: "Progress tracking",
-    detail:
-      "Track your progress and results with growth charts, stay motivated with streaks and habit trackers, tap into personalized insights, celebrate badges and milestones.",
-  },
+    {
+        id: 1,
+        title: "Customized plans for growth",
+        detail:
+            "Get a personalized plan to focus on what is important to you. Take the MindFrame quiz and jump-start your growth.",
+    },
+    {
+        id: 2,
+        title: "Instant strategies for high-stress moments",
+        detail:
+            "Access short exercises to regain balance and focus when it matters the most, when you need it the most.",
+    },
+    {
+        id: 3,
+        title: "Concise lessons for fast learning",
+        detail:
+            "Master essential Mind Skills with short, science-backed lessons and practices that fit easily into your day to deliver immediate impact.",
+    },
+    {
+        id: 4,
+        title: "Guided journaling for reflection",
+        detail:
+            "Reflect on your thoughts and progress with prompted journals available in both written and audio formats.",
+    },
+    {
+        id: 5,
+        title: "Monthly Challenges to level up",
+        detail:
+            "Transform habits and build new skills through structured monthly challenges that push your cognitive boundaries.",
+    },
+    {
+        id: 6,
+        title: "Progress tracking",
+        detail:
+            "Track your progress and results with growth charts, stay motivated with streaks and habit trackers, tap into personalized insights, celebrate badges and milestones.",
+    },
 ];
 
+
 interface DynamicPhoneMockupProps {
-  activeScreenId: ScreenKey;
+    activeScreenId: ScreenKey;
 }
 
 const DynamicPhoneMockup: React.FC<DynamicPhoneMockupProps> = ({ activeScreenId }) => {
-  return (
-    <div className="relative flex h-full w-full items-center justify-center lg:h-[700px] xl:h-[800px]">
-      <div className="relative flex h-[550px] w-64 items-center justify-center overflow-hidden md:h-[680px] md:w-80 lg:h-[690px] lg:w-[320px] xl:h-[700px] xl:w-[380px]">
-        <img
-          src="/media/individuals/frame-phone.webp"
-          alt="Phone Frame"
-          className="pointer-events-none absolute z-[3] h-[400px] w-[200px] select-none md:h-[650px] md:w-[320px] lg:h-[690px] lg:w-[320px] xl:h-[650px] xl:w-80 2xl:h-[690px] 2xl:w-[320px]"
-        />
+    return (
+        <div className="flex justify-center items-center relative w-full h-full lg:h-[700px] xl:h-[800px]">
+            <div className="relative w-64 h-[550px] md:w-80 md:h-[680px] lg:w-[320px] lg:h-[690px] xl:w-[380px] xl:h-[700px] overflow-hidden flex items-center justify-center">
+                {Object.entries(MOCK_SCREENS).map(([id, screen]) => {
+                    const isActive = Number(id) === activeScreenId;
 
-        {Object.entries(MOCK_SCREENS).map(([id, screen]) => {
-          const isActive = Number(id) === activeScreenId;
 
-          const springProps = useSpring({
-            opacity: isActive ? 1 : 0,
-            scale: isActive ? 1 : 0.995,
-            config: {
-              mass: 1.3,
-              tension: 50,
-              friction: 30,
-              clamp: false,
-            },
-          });
+                    const springProps = useSpring({
+                        opacity: isActive ? 1 : 0,
+                        scale: isActive ? 1 : 0.995,
+                        config: { mass: 1, tension: 120, friction: 20 },
+                    });
 
-          return (
-            <animated.div
-              key={id}
-              style={{
-                ...springProps,
-
-                zIndex: 2,
-              }}
-              className="absolute md:top-[16px]"
-            >
-              <LazyImage
-                src={screen.src}
-                alt={screen.alt}
-                className="h-[400px] w-[200px] object-contain md:h-[650px] md:w-[320px] lg:h-[667px] lg:w-[310px] xl:h-[650px] xl:w-80 2xl:h-[667px] 2xl:w-[310px]"
-              />
-            </animated.div>
-          );
-        })}
-      </div>
-    </div>
-  );
+                    return (
+                        <animated.div
+                            key={id}
+                            style={{
+                                ...springProps,
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                width: "100%",
+                                height: "100%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                pointerEvents: "none",
+                            }}
+                        >
+                            {screen.content}
+                        </animated.div>
+                    );
+                })}
+            </div>
+        </div>
+    );
 };
 
+
 const MyQStudio: React.FC = () => {
-  const [activeFeatureId, setActiveFeatureId] = useState<ScreenKey>(1);
-  const [isMobileView, setIsMobileView] = useState<boolean>(false);
-  const [downloadLink, setDownloadLink] = useState<string>("");
-  const { TITLE_PRIMARY, TITLE_SECONDARY, DESCRIPTION, BUTTON_TEXT } =
-    CONTENT_CONFIG.INDIVIDUAL_PAGE.MYQSTUDIO_SECTION;
+    const [activeFeatureId, setActiveFeatureId] = useState<ScreenKey>(1);
+    const [isMobileView, setIsMobileView] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const userAgent = window.navigator.userAgent;
-      if (userAgent.includes("Mac")) setDownloadLink(DOWNLOAD_LINKS.macos);
-      else if (userAgent.includes("Win")) setDownloadLink(DOWNLOAD_LINKS.windows);
-      else setDownloadLink(DOWNLOAD_LINKS.windows);
-    }
-  }, []);
 
-  useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobileView(window.innerWidth < 1280);
-    };
+    useEffect(() => {
+        const checkScreenSize = () => {
 
-    checkScreenSize();
-    window.addEventListener("resize", checkScreenSize);
-    return () => window.removeEventListener("resize", checkScreenSize);
-  }, []);
+            setIsMobileView(window.innerWidth < 1280);
+        };
 
-  const containerClasses = "";
+        checkScreenSize();
+        window.addEventListener("resize", checkScreenSize);
+        return () => window.removeEventListener("resize", checkScreenSize);
+    }, []);
 
-  const activeFeature = UPDATED_FEATURES.find((feature) => feature.id === activeFeatureId);
+    const containerClasses = "";
 
-  return (
-    <div className="font-inter h-full min-h-screen w-screen bg-[#F9F9F9] px-4 py-16 text-gray-800 select-none sm:px-8 sm:py-20 md:px-10 lg:px-20">
-      <section className="h-full">
-        <div className={containerClasses}>
-          <div className="flex flex-col justify-center xl:items-center xl:px-8 xl:text-center">
-            <h2 className="!leading-[100%] !font-bold !tracking-wide text-teal-900 sm:text-2xl sm:font-normal md:text-xl lg:text-xl lg:text-[28px] xl:text-[40px]">
-              {TITLE_PRIMARY}
-              <br />
-              <span className="mt-3 block">{TITLE_SECONDARY}</span>
-            </h2>
-            <h6 className="mt-4 font-light text-[#535353] lg:text-[18px] lg:font-normal xl:mx-auto xl:max-w-6xl xl:text-center xl:text-[26px]">
-              {DESCRIPTION}
-            </h6>
-            <div className="flex h-auto pt-8 pb-10 lg:justify-center">
-              <a
-                href={downloadLink || "#"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-full bg-red-700 !px-9 !py-6 text-2xl font-medium text-white antialiased transition duration-300 ease-in-out select-none hover:bg-[var(--color-red-hover)]"
-              >
-                {BUTTON_TEXT}
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
+    const activeFeature = UPDATED_FEATURES.find(
+        (feature) => feature.id === activeFeatureId
+    );
 
-      <section className={` ${containerClasses}`}>
-        <div className="container-custom flex flex-col items-start xl:grid xl:grid-cols-2 xl:gap-50">
-          <div className="order-1 flex w-full justify-center pt-8 xl:order-2 xl:mt-0 xl:pt-0">
-            <DynamicPhoneMockup activeScreenId={activeFeatureId} />
-          </div>
-
-          <div className="order-2 xl:order-1 xl:pt-20">
-            {isMobileView ? (
-              activeFeature && (
-                <div className="mt-8 flex flex-col items-center px-4 text-center">
-                  <div className="mb-4 flex items-center justify-center gap-2">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#BDBDBD1A]">
-                      <span className="flex h-10 w-auto items-center justify-center rounded-full px-3">
-                        {activeFeature.id}
-                      </span>
+    return (
+        <div className="min-h-screen w-screen h-full bg-[#F9F9F9] font-inter text-gray-800 select-none py-16 sm:py-20 px-4 sm:px-8 md:px-10 lg:px-20">
+            <section className="h-full">
+                <div className={containerClasses}>
+                    <div className="flex flex-col xl:items-center justify-center xl:px-8 xl:text-center ">
+                        <h2 className="!font-bold sm:font-normal xl:text-[50px] lg:text-[28px] lg:text-xl sm:text-2xl md:text-xl !leading-[100%] !tracking-wide text-teal-900">
+                            The MyQStudio App
+                            <br />
+                            <span className="block mt-3">
+                                A personal development platform for real change.
+                            </span>
+                        </h2>
+                        <h6 className="font-light lg:font-normal xl:text-[26px] lg:text-[18px] text-[#535353] xl:text-center xl:max-w-6xl xl:mx-auto mt-8">
+                            Bite-sized learning that fits perfectly anywhere, anytime. Simple
+                            techniques so intuitive you'll wonder why you didn't try them
+                            sooner.
+                        </h6>
+                        <div className="flex lg:justify-center h-auto pt-10 ">
+                            <a
+                                href="https://apps.apple.com/in/app/id6621264428"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="!py-6 !px-9 bg-red-700 hover:bg-[var(--color-red-hover)] font-medium text-2xl antialiased text-white rounded-full transition duration-300 ease-in-out select-none"
+                            >
+                                {CONTENT_CONFIG.LANDING_PAGE.HERO.BUTTON_TEXT}
+                            </a>
+                        </div>
                     </div>
-                    <h3 className="text-xl font-semibold text-teal-900 sm:text-2xl">
-                      {activeFeature.title}
-                    </h3>
-                  </div>
-                  <h4 className="mb-8 max-w-md text-base font-normal text-gray-800">
-                    {activeFeature.detail}
-                  </h4>
                 </div>
-              )
-            ) : (
-              <ul className="space-y-10">
-                {UPDATED_FEATURES.map((feature) => {
-                  const isActive = feature.id === activeFeatureId;
+            </section>
 
-                  return (
-                    <li
-                      key={feature.id}
-                      className="group flex cursor-pointer flex-col gap-2 md:flex-row md:gap-4"
-                      onMouseEnter={() => setActiveFeatureId(feature.id)}
-                    >
-                      <div className="flex h-11 w-auto items-center justify-center rounded-full bg-[#F3F3F3] px-4">
-                        <span className="text-2xl font-semibold text-gray-800">{feature.id}</span>
-                      </div>
+            <section className={` ${containerClasses}`}>
+                <div className="container-custom flex flex-col xl:grid xl:grid-cols-2 xl:gap-50 items-start">
 
-                      <div className="relative max-w-5xl">
-                        <h3 className="text-[28px] font-semibold text-teal-900 sm:text-[18px] md:text-[22px] lg:text-[28px]  ">
-                          {feature.title}
-                        </h3>
+                    <div className="order-1 xl:order-2 xl:mt-0 pt-8 xl:pt-0 flex justify-center w-full">
+                        <DynamicPhoneMockup activeScreenId={activeFeatureId} />
+                    </div>
 
-                        <motion.div
-                          key={feature.id}
-                          initial={{ height: 0 }}
-                          animate={{ height: isActive ? "auto" : 0 }}
-                          transition={{ duration: 0.6, ease: "easeInOut" }}
-                          className="overflow-hidden"
-                        >
-                          <div className="mt-5 mb-5 text-xl font-normal tracking-wide text-gray-800 lg:text-[22px]">
-                            {feature.detail}
-                          </div>
-                        </motion.div>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
+
+                    <div className="order-2 xl:order-1 xl:pt-20">
+                        {isMobileView ? (
+
+                            activeFeature && (
+                                <div className="flex flex-col items-center text-center px-4 mt-8">
+
+                                    <div className="flex items-center justify-center gap-2 mb-4">
+                                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#BDBDBD1A]">
+                                            <span className="font-bold text-teal-900 text-2xl">
+                                                {activeFeature.id}
+                                            </span>
+                                        </div>
+                                        <h3 className="text-xl sm:text-2xl font-semibold text-teal-900">
+                                            {activeFeature.title}
+                                        </h3>
+                                    </div>
+                                    <h4 className="font-normal text-base text-gray-800 mb-8 max-w-md">
+                                        {activeFeature.detail}
+                                    </h4>
+                                </div>
+                            )
+                        ) : (
+
+                            <ul className="space-y-10">
+                                {UPDATED_FEATURES.map((feature) => {
+                                    const isActive = feature.id === activeFeatureId;
+                                    return (
+                                        <li
+                                            key={feature.id}
+                                            className="flex flex-col gap-2 md:flex-row md:gap-4 cursor-pointer group"
+                                            onMouseEnter={() => setActiveFeatureId(feature.id)}
+                                        >
+                                            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#BDBDBD1A]">
+                                                <span className="font-bold text-teal-900 text-2xl">
+                                                    {feature.id}
+                                                </span>
+                                            </div>
+                                            <div className="max-w-5xl">
+                                                <h3
+                                                    className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold transition-all duration-300 ease-in-out ${isActive ? "text-teal-900 mb-2" : "text-teal-800"
+                                                        }`}
+                                                >
+                                                    {feature.title}
+                                                </h3>
+                                                <h4
+                                                    className={`font-normal transition-[max-height,opacity,margin-top] duration-500 ease-in-out overflow-hidden ${isActive
+                                                        ? "text-xl lg:text-2xl text-gray-800 max-h-40 mt-5 mb-5 opacity-100"
+                                                        : "text-base text-gray-600 max-h-0 mt-0 opacity-0"
+                                                        }`}
+                                                >
+                                                    {feature.detail}
+                                                </h4>
+                                            </div>
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        )}
+                    </div>
+                </div>
+
+
+                {isMobileView && (
+                    <div className="flex justify-center space-x-2 mt-4 mb-8 xl:hidden">
+                        {UPDATED_FEATURES.map((feature) => (
+                            <span
+                                key={feature.id}
+                                className={`block w-3 h-3 rounded-full cursor-pointer transition-colors duration-300 ${feature.id === activeFeatureId ? "bg-teal-900" : "bg-gray-400"
+                                    }`}
+                                onClick={() => setActiveFeatureId(feature.id)}
+                            ></span>
+                        ))}
+                    </div>
+                )}
+            </section>
         </div>
-
-        {isMobileView && (
-          <div className="mt-4 mb-8 flex justify-center space-x-2 xl:hidden">
-            {UPDATED_FEATURES.map((feature) => (
-              <span
-                key={feature.id}
-                className={`block h-3 w-3 cursor-pointer rounded-full transition-colors duration-300 ${
-                  feature.id === activeFeatureId ? "bg-teal-900" : "bg-gray-400"
-                }`}
-                onClick={() => setActiveFeatureId(feature.id)}
-              ></span>
-            ))}
-          </div>
-        )}
-      </section>
-    </div>
-  );
+    );
 };
 
 export default MyQStudio;

@@ -1,6 +1,6 @@
 # QStudio (Next.js)
 
-![QStudio Logo](public/media/logos/full_logo.webp)
+![QStudio Logo](public/media/logos/full_logo.png)
 
 QStudio is a modern web application built using **Next.js**, **TypeScript**, and **Tailwind CSS**.  
 This setup provides a **fast**, **SEO-optimized**, and **scalable** frontend environment with built-in routing, server-side rendering (SSR), static generation (SSG), and powerful API routes — all powered by Next.js.
@@ -45,3 +45,5 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+
+

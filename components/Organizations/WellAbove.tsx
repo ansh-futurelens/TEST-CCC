@@ -1,381 +1,111 @@
-import { CONTENT_CONFIG } from "@/config/contentConfig";
-import React, { useEffect, useState, useRef, ReactNode } from "react";
-
-interface SelectOption {
-  value: string;
-  label: string;
-}
-
-interface LazyBackgroundProps {
-  src: string;
-  className?: string;
-  style?: React.CSSProperties;
-  children?: ReactNode;
-}
-
-const FormInputField: React.FC<{
-  id: string;
-  label: string;
-  type: string;
-  placeholder: string;
-}> = ({ id, label, type, placeholder }) => (
-  <div className="w-full">
-    <label htmlFor={id} className="sr-only">
-      {label}
-    </label>
-    <input
-      type={type}
-      id={id}
-      name={id}
-      placeholder={placeholder}
-      className="block h-[64px] w-full rounded-2xl bg-[#024E48] px-4 py-4 text-lg text-white placeholder-white transition duration-200 hover:bg-[#02514B] focus:ring-0 focus:outline-none"
-    />
-  </div>
-);
-
-const FormSelectField: React.FC<{
-  id: string;
-  label: string;
-  options: SelectOption[];
-}> = ({ id, label, options }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState(options[0].value);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const selectedLabel = options.find((opt) => opt.value === selected)?.label || options[0].label;
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  return (
-    <div className="relative w-full" ref={dropdownRef}>
-      <label htmlFor={id} className="sr-only">
-        {label}
-      </label>
-      <button
-        type="button"
-        id={id}
-        className="relative block flex h-[64px] w-full cursor-pointer items-center justify-between rounded-2xl bg-[#024E48] px-4 py-4 pr-10 text-left text-lg text-white transition duration-200 hover:bg-[#02514B] focus:ring-0 focus:outline-none"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        {selectedLabel}
-        <svg
-          className={`h-5 w-5 transition-transform ${isOpen ? "rotate-180" : ""}`}
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </button>
-      {isOpen && (
-        <div
-          className="absolute left-0 z-[1000] w-full rounded-xl bg-[#01776F] shadow-lg"
-          style={{ bottom: "100%", marginBottom: "-200px" }}
-        >
-          {options.map((option) => (
-            <div
-              key={option.value}
-              onClick={() => {
-                setSelected(option.value);
-                setIsOpen(false);
-              }}
-              className={`block cursor-pointer px-4 py-4 text-lg ${option.value === selected ? "font-semibold text-white" : "text-white"} transition duration-150 ease-in-out hover:bg-[#016962]`}
-              role="option"
-              aria-selected={option.value === selected}
-            >
-              {option.label}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
-const LazyBackground: React.FC<LazyBackgroundProps> = ({ src, className, style, children }) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, []);
-
-  return (
-    <div
-      ref={ref}
-      className={className}
-      style={{
-        ...style,
-        backgroundImage: isVisible ? `url(${src})` : undefined,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      {children}
-    </div>
-  );
-};
-
-interface LazyImageProps {
-  src: string;
-  alt: string;
-  className?: string;
-}
-
-const LazyImage: React.FC<LazyImageProps> = ({ src, alt, className }) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const imgRef = useRef<HTMLImageElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    if (imgRef.current) observer.observe(imgRef.current);
-    return () => observer.disconnect();
-  }, []);
-
-  return <img ref={imgRef} src={isVisible ? src : ""} alt={alt} className={className} />;
-};
-
-const Form: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
-  const [isSubmitted, setIsSubmitted] = useState(false);
-
-  useEffect(() => {
-    const handleKeydown = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    if (isOpen) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "unset";
-    window.addEventListener("keydown", handleKeydown);
-    return () => {
-      document.body.style.overflow = "unset";
-      window.removeEventListener("keydown", handleKeydown);
-    };
-  }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
-
-  const industryOptions: SelectOption[] = [
-    { value: "education", label: "Education" },
-    { value: "healthcare", label: "Healthcare" },
-    { value: "manufacturing", label: "Manufacturing" },
-    { value: "retail", label: "Retail" },
-    { value: "technology", label: "Technology" },
-    { value: "banking_finance", label: "Banking & Finance" },
-    { value: "hospitality", label: "Hospitality" },
-    { value: "media", label: "Media" },
-    { value: "transportation", label: "Transportation" },
-    { value: "government", label: "Government" },
-    { value: "professional_services", label: "Professional Services" },
-  ];
-
-  const functionOptions: SelectOption[] = [
-    { value: "function", label: "Function" },
-    { value: "talent", label: "Talent" },
-    { value: "sales_marketing", label: "Sales & Marketing" },
-    { value: "operations", label: "Operations" },
-    { value: "legal_compliance", label: "Legal & Compliance" },
-    { value: "production", label: "Production" },
-    { value: "it", label: "Information Technology" },
-  ];
-
-  const employeeCountOptions: SelectOption[] = [
-    { value: "", label: "Number of Employees" },
-    { value: "1-50", label: "1-50" },
-    { value: "51-500", label: "51-500" },
-    { value: "501-2000", label: "501-2000" },
-    { value: "2001-5000", label: "2001-5000" },
-    { value: "5000+", label: "5000+" },
-  ];
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/40 p-4">
-      <LazyBackground
-        src="/media/team/download_bg.webp"
-        className="relative mx-auto my-10 w-full max-w-6xl transform overflow-visible rounded-4xl shadow-2xl transition-all duration-300"
-        style={{
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 z-10 flex items-center justify-center rounded-full bg-[#02514B] p-3 text-white transition duration-200"
-          aria-label="Close modal"
-        >
-          <svg
-            className="h-5 w-5"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-
-        <div className="w-full rounded-4xl p-6 backdrop-blur-md sm:p-10 md:p-12">
-          <h2 className="mb-6 text-center text-4xl font-bold text-white">
-            Experience the impact for yourself!
-          </h2>
-          <h3 className="mx-auto mb-8 max-w-7xl text-center text-2xl text-white md:mb-12">
-            Schedule a personalized demo to learn how Q Studio's Mind Skills Training can help your
-            <br /> organization and employees.
-          </h3>
-
-          <form className="space-y-6">
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <FormInputField
-                id="firstName"
-                label="First Name"
-                type="text"
-                placeholder="First Name"
-              />
-              <FormInputField id="lastName" label="Last Name" type="text" placeholder="Last Name" />
-              <FormInputField
-                id="emailAddress"
-                label="Email"
-                type="email"
-                placeholder="Email Address"
-              />
-              <FormInputField
-                id="mobileNumber"
-                label="Mobile"
-                type="tel"
-                placeholder="Mobile Number"
-              />
-              <FormInputField
-                id="companyName"
-                label="Company"
-                type="text"
-                placeholder="Company Name"
-              />
-              <FormSelectField id="industry" label="Industry" options={industryOptions} />
-              <FormSelectField id="function" label="Function" options={functionOptions} />
-              <FormSelectField
-                id="employeeCount"
-                label="Employees"
-                options={employeeCountOptions}
-              />
-            </div>
-
-            <div className="flex w-full pt-14 lg:justify-center">
-              <button
-                type="submit"
-                className="rounded-full bg-[#71604D] px-7 py-4 text-2xl font-medium text-[#C7C2BB] transition duration-300 ease-in-out select-none"
-              >
-                Submit
-              </button>
-            </div>
-          </form>
-        </div>
-      </LazyBackground>
-    </div>
-  );
-};
+import { CONTENT_CONFIG } from "../../config/contentConfig";
 
 const WellAbove = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const toggleModal = () => setIsModalOpen(!isModalOpen);
+    const { HEADING, SUB_HEADING, LEFT_CARDS, RIGHT_CARDS } =
+        CONTENT_CONFIG.ORGANIZATION_PAGE.WELLABOVE_PROGRAM;
 
-  const HERO = CONTENT_CONFIG.ORGANIZATION_PAGE.WELL_ABOVE.HERO;
-  const CARDS = CONTENT_CONFIG.ORGANIZATION_PAGE.WELL_ABOVE.CARDS;
-
-  return (
-    <div className="wellabove-root">
-      <div className="container-custom">
-        <div className="wellabove-heading-wrapper">
-          <h2
-            className="wellabove-heading-primary"
-            dangerouslySetInnerHTML={{ __html: HERO.HEADING.join("<br/>") }}
-          ></h2>
-          <h6
-            className="wellabove-sub-heading"
-            dangerouslySetInnerHTML={{ __html: HERO.SUB_HEADING.join("<br/>") }}
-          ></h6>
-        </div>
-
-        <div className="wellabove-cards-section">
-          <div className="wellabove-cards-wrapper">
-            <div className="wellabove-cards-column">
-              {CARDS.filter((_, i) => i % 2 === 0).map((card, idx) => (
-                <div key={idx} className="wellabove-card">
-                  <div className="wellabove-card-img-wrapper">
-                    <LazyImage
-                      src={card.img}
-                      alt={card.title}
-                      className="wellabove-card-img"
-                    />
-                  </div>
-                  <div className="wellabove-card-content">
-                    <h4 className="wellabove-card-title">{card.title}</h4>
-                    <h3 className="wellabove-card-desc">{card.desc}</h3>
-                  </div>
+    return (
+        <div className="h-full w-screen bg-[#F0F0F0] select-none py-16 sm:py-20 px-4 sm:px-8 md:px-10 lg:px-20">
+            <div className="container-custom">
+                <div className="flex flex-col xl:items-center justify-center xl:px-8 xl:text-center">
+                    <h2
+                        className="font-sans !font-bold sm:font-normal xl:text-[40px] lg:text-[28px] sm:text-2xl md:text-[28px] text-2xl !leading-[100%] !tracking-wide text-teal-900"
+                        dangerouslySetInnerHTML={{ __html: HEADING }}
+                    ></h2>
+                    <h6
+                        className="xl:text-[26px] lg:text-[18px] sm:text-[20px] md:text-[20px] text-gray-800 xl:text-center xl:max-w-6xl xl:mx-auto mt-5 xl:font-normal !lg:font-normal"
+                        dangerouslySetInnerHTML={{
+                            __html: SUB_HEADING
+                                .replace("workforce.", "workforce.<br/>")
+                                .replace("resilience", "resilience<br/>"),
+                        }}
+                    ></h6>
                 </div>
-              ))}
-            </div>
 
-            <div className="wellabove-cards-column">
-              {CARDS.filter((_, i) => i % 2 === 1).map((card, idx) => (
-                <div key={idx} className="wellabove-card">
-                  <div className="wellabove-card-img-wrapper">
-                    <LazyImage
-                      src={card.img}
-                      alt={card.title}
-                      className="wellabove-card-img"
-                    />
-                  </div>
-                  <div className="wellabove-card-content">
-                    <h4 className="wellabove-card-title">{card.title}</h4>
-                    <h3 className="wellabove-card-desc">{card.desc}</h3>
-                  </div>
+                <div className="py-10">
+                    <div className="flex flex-col xl:flex-row xl:justify-center gap-6 xl:px-6">
+                        {/* Left Column */}
+                        <div className="flex flex-col gap-6 w-full xl:w-1/2">
+                            {LEFT_CARDS.map((card, i) => (
+                                <div
+                                    key={`left-card-${i}`}
+                                    // Added h-full here to make sure all cards in this flex column are the same height
+                                    // And items-start to keep content at the top
+                                    className="border-white border rounded-4xl p-5 flex items-start gap-4 h-full"
+                                >
+                                    {/* Image Container */}
+                                    {/* Using flex-shrink-0 to prevent the image from shrinking */}
+                                    {/* Using a consistent width for the image container across breakpoints for better alignment */}
+                                    <div className="flex-shrink-0 w-24 sm:w-28 md:w-32 lg:w-36">
+                                        <img
+                                            src={card.img}
+                                            alt={card.title}
+                                            // Ensure image fills its container and maintains aspect ratio
+                                            className="w-full h-auto object-cover rounded-xl select-none"
+                                        />
+                                    </div>
+                                    {/* Text Content */}
+                                    {/* flex-grow to take up remaining space, and flex-col for internal stacking */}
+                                    <div className="flex-grow flex flex-col text-left">
+                                        <h4 className="text-xl font-bold text-teal-900">
+                                            {card.title}
+                                        </h4>
+                                        <h3 className="text-gray-600 text-lg mt-2">{card.desc}</h3>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Right Column */}
+                        <div className="flex flex-col gap-6 w-full xl:w-1/2">
+                            {RIGHT_CARDS.map((card, i) => (
+                                <div
+                                    key={`right-card-${i}`}
+                                    // Added h-full here
+                                    className="border-white border rounded-4xl p-5 flex items-start gap-4 h-full"
+                                >
+                                    {/* Image Container */}
+                                    <div className="flex-shrink-0 w-24 sm:w-28 md:w-32 lg:w-36">
+                                        <img
+                                            src={card.img}
+                                            alt={card.title}
+                                            className="w-full h-auto object-cover rounded-xl select-none"
+                                        />
+                                    </div>
+                                    {/* Text Content */}
+                                    <div className="flex-grow flex flex-col text-left">
+                                        <h4 className="text-xl font-bold text-teal-900">
+                                            {card.title}
+                                        </h4>
+                                        <h3 className="text-gray-600 text-lg mt-2">{card.desc}</h3>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
-              ))}
+                <div className="flex 
+                justify-start  /* default: left aligned */
+                sm:justify-start 
+                md:justify-start 
+                lg:justify-start 
+                xl:justify-center  /* center on extra large screens */
+                pt-3"
+                >
+                    <button
+                        className="cursor-pointer py-3 px-6 sm:py-5 sm:px-6 
+                   bg-[#50418C] hover:bg-[#7B6CB9] 
+                   text-base sm:text-lg md:text-xl lg:text-2xl 
+                   font-medium text-white rounded-full 
+                   transition duration-300 ease-in-out"
+                    >
+                        Schedule a Demo
+                    </button>
+                </div>
+
             </div>
-          </div>
         </div>
-
-        <div className="wellabove-button-wrapper">
-          <button onClick={toggleModal} className="wellabove-button">
-            {HERO.BUTTON_PRIMARY.TEXT}
-          </button>
-        </div>
-      </div>
-
-      {isModalOpen && <Form isOpen={isModalOpen} onClose={toggleModal} />}
-    </div>
-  );
+    );
 };
 
 export default WellAbove;

@@ -1,25 +1,26 @@
-import Actionable from "../components/organizations/Actionable";
-import EveryRole from "../components/organizations/EveryRole";
-import Experience from "../components/organizations/Experience";
-import MentalFitness from "../components/organizations/MentalFitness";
-import MinimalDisruption from "../components/organizations/MinimalDisruption";
-import OrganizartionHeroSection from "../components/organizations/OrganizartionHeroSection";
-import OrganizationYourMind from "../components/organizations/OrganizationYourMind";
-import WellAbove from "../components/organizations/WellAbove";
+import Actionable from "../components/Organizations/Actionable";
+import EveryRole from "../components/Organizations/EveryRole";
+import Experience from "../components/Organizations/Experience";
+import MentalFitness from "../components/Organizations/MentalFitness";
+import MinimalDisruption from "../components/Organizations/MinimalDisruption";
+import OrganizartionHeroSection from "../components/Organizations/OrganizartionHeroSection";
+import OrganizationYourMind from "../components/Organizations/OrganizationYourMind";
+import WellAbove from "../components/Organizations/WellAbove";
 
 const Organization = () => {
-  return (
-    <div className="antialiased">
-      <OrganizartionHeroSection />
-      <WellAbove />
-      <EveryRole />
-      <MinimalDisruption />
-      <Actionable />
-      <MentalFitness />
-      <Experience />
-      <OrganizationYourMind />
-    </div>
-  );
+    return (
+        <div>
+            <OrganizartionHeroSection />
+            <WellAbove />
+            <EveryRole />
+            <MinimalDisruption />
+            <Actionable />
+            <MentalFitness />
+            <Experience/>
+            <OrganizationYourMind />
+
+        </div>
+    );
 };
 
 export default Organization;

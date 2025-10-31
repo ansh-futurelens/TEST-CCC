@@ -4,17 +4,15 @@ import MyQStudio from "../components/individual/MyQStudioApp";
 import YourMind from "../components/individual/YourMind";
 import MindSkills from "../components/individual/MindSkills";
 import WhatNeed from "../components/individual/WhatNeed";
-import AdvantageSection from "@/components/individual/AdvantageSection";
 
 const Individual = () => {
   return (
-    <div className="antialiased">
+    <div>
       <IndividualHeroSection />
       <Skills />
       <MyQStudio />
       <MindSkills />
       <WhatNeed />
-      <AdvantageSection />
       <YourMind />
     </div>
   );

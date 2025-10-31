@@ -1,46 +1,17 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useRouter } from "next/router";
-import { LazyImage } from "../LazyMedia";
 
-interface HeaderProps {
-  bgColor?: string;
-  textColor?: string;
-  activeBgColor?: string;
-  activeTextColor?: string;
-  hoverBgColor?: string;
-  hoverTextColor?: string;
-  buttonBgColor?: string;
-  buttonHoverColor?: string;
-}
-
-const Header: React.FC<HeaderProps> = ({
-  bgColor = "",
-  textColor = "",
-  activeBgColor = "",
-  activeTextColor = "",
-  hoverBgColor = "",
-  hoverTextColor = "",
-  buttonBgColor = "",
-  buttonHoverColor = "",
-}) => {
+const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const pathname = usePathname();
-  const router = useRouter();
-
-  useEffect(() => {
-    ["aboutus", "individual", "organizations", "universities"].forEach((path) =>
-      router.prefetch(`/${path}`)
-    );
-  }, [router]);
 
   const menuItems = [
     { name: "Individuals", href: "/individual" },
-    { name: "Universities", href: "/universities" },
+    { name: "Teams", href: "/teams" },
     { name: "Organizations", href: "/organizations" },
-    { name: "About Us", href: "/aboutus" },
+    { name: "About Us", href: "/about" },
     { name: "Resources", href: "/resources" },
   ];
 
@@ -52,95 +23,102 @@ const Header: React.FC<HeaderProps> = ({
   }, [isOpen]);
 
   return (
-    <nav className="header-root">
-      <div className="header-container container-custom">
-        <div className="header-logo-wrapper">
-          <button className="header-menu-button" onClick={() => setIsOpen(true)}>
-            <img src="/media/icons/icon.webp" alt="Menu" className="h-7 w-7 object-contain" />
-          </button>
+    <nav className="w-full absolute top-0 left-0 z-50 pt-5">
+      <div className="container-custom">
+        <div className="flex items-center justify-between py-4">
+          {/* Logo + Mobile Menu Button */}
+          <div className="flex items-center gap-3">
+            <button
+              className="2xl:hidden p-2 rounded-md hover:bg-teal-700 transition"
+              onClick={() => setIsOpen(true)}
+            >
+              <img
+                src="/media/icons/mobile-icon.png"
+                alt="Menu"
+                className="h-7 w-7 object-contain"
+              />
+            </button>
 
-          <Link href="/" aria-label="Go to homepage">
-            <img src="/media/logos/q_white_logo.webp" alt="Q Studio Logo" className="header-logo" />
-          </Link>
-        </div>
+            <Link href="/" aria-label="Go to homepage">
+              <img
+                src="/media/logos/q_white_logo.png"
+                alt="Q Studio Logo"
+                className="h-10 md:h-15 lg:h-20"
+              />
+            </Link>
+          </div>
 
-        <ul className="header-nav">
-          {menuItems.map((item, idx) => {
-            const isActive = pathname === item.href;
-            return (
+          {/* Desktop Menu */}
+          <ul className="hidden 2xl:flex gap-6 text-white text-base xl:text-lg font-medium">
+            {menuItems.map((item, idx) => (
               <li key={idx}>
                 <Link
                   href={item.href}
-                  style={{
-                    backgroundColor: isActive ? activeBgColor : bgColor,
-                    color: isActive ? activeTextColor : textColor,
-                  }}
-                  className="header-nav-link header-nav-link-hover header-cta"
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLAnchorElement).style.backgroundColor = hoverBgColor;
-                    (e.currentTarget as HTMLAnchorElement).style.color = hoverTextColor;
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLAnchorElement).style.backgroundColor = isActive
-                      ? activeBgColor
-                      : bgColor;
-                    (e.currentTarget as HTMLAnchorElement).style.color = isActive
-                      ? activeTextColor
-                      : textColor;
-                  }}
-                >
-                  {item.name}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-
-        <a
-          href="https://play.google.com/store/apps/details?id=com.myqstudio.myq.prod"
-          className="header-cta"
-          style={{ backgroundColor: buttonBgColor }}
-          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = buttonHoverColor)}
-          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = buttonBgColor)}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Try for Free
-        </a>
-      </div>
-      <div
-        className={`header-mobile-menu-bg ${
-          isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
-        }`}
-      >
-        <div className={`header-mobile-menu ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
-          <div className="mb-6 flex items-center justify-between">
-            <LazyImage
-              src="/media/logos/q-logo-mobile.webp"
-              alt="Logo"
-              className="header-mobile-logo"
-            />
-            <button className="header-mobile-close-btn" onClick={() => setIsOpen(false)}>
-              <X size={18} className="text-white" />
-            </button>
-          </div>
-
-          <ul className="header-mobile-list">
-            {menuItems.map((item, idx) => (
-              <li key={idx} className="header-mobile-list-item">
-                <Link
-                  href={item.href}
-                  onClick={() => setIsOpen(false)}
-                  className="header-mobile-list-link"
+                  className="px-4 py-2 rounded-full hover:bg-teal-hover transition whitespace-nowrap"
                 >
                   {item.name}
                 </Link>
               </li>
             ))}
           </ul>
+
+          {/* CTA Button */}
+          <div className="flex items-center">
+            <a
+              href="https://themesberg.com/product/tailwind-css/landing-page"
+              className="bg-red-700 text-white text-sm sm:text-base lg:text-lg font-medium py-2 px-5 sm:py-3 sm:px-7 rounded-full hover:bg-[var(--color-red-hover)] transition whitespace-nowrap"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Try for Free
+            </a>
+          </div>
         </div>
 
-        <div className="flex-1" onClick={() => setIsOpen(false)} />
+        {/* Mobile Menu Overlay */}
+        <div
+          className={`fixed inset-0 z-50 bg-black/50 flex transition-opacity duration-300 ${
+            isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          }`}
+        >
+          {/* Sidebar */}
+          <div
+            className={`bg-[#F1F1F1] h-full flex flex-col transform transition-transform duration-300 ${
+              isOpen ? "translate-x-0" : "-translate-x-full"
+            } w-4/5 sm:w-96 md:w-[30rem] p-6`}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <img
+                src="/media/logos/mobile-logo.png"
+                alt="Logo"
+                className="h-8 md:h-10 ml-6"
+              />
+              <button
+                className="p-1 rounded-full bg-[#02514B] flex items-center justify-center"
+                onClick={() => setIsOpen(false)}
+              >
+                <X size={18} className="text-white" />
+              </button>
+            </div>
+
+            <ul className="flex flex-col font-medium">
+              {menuItems.map((item, idx) => (
+                <li key={idx} className="border-b border-[#E6E9E9]">
+                  <Link
+                    href={item.href}
+                    onClick={() => setIsOpen(false)}
+                    className="text-[#02514B] py-4 px-4 block hover:bg-gray-100"
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Click outside to close */}
+          <div className="flex-1" onClick={() => setIsOpen(false)} />
+        </div>
       </div>
     </nav>
   );
