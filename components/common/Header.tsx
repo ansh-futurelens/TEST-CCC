@@ -33,7 +33,7 @@ const Header: React.FC<HeaderProps> = ({
     { name: "Individuals", href: "/individual" },
     { name: "Teams", href: "/teams" },
     { name: "Organizations", href: "/organizations" },
-    { name: "About Us", href: "/aboutus" },
+    { name: "About Us", href: "/about" },
     { name: "Resources", href: "/resources" },
   ];
 

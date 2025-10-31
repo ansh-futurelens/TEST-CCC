@@ -1,17 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { DOWNLOAD_LINKS } from "../constants/downloadLinks";
-
 const MindFocusSection = () => {
-  const [downloadLink, setDownloadLink] = useState<string>("");
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const userAgent = window.navigator.userAgent;
-      if (userAgent.includes("Mac")) setDownloadLink(DOWNLOAD_LINKS.macos);
-      else if (userAgent.includes("Win")) setDownloadLink(DOWNLOAD_LINKS.windows);
-      else setDownloadLink(DOWNLOAD_LINKS.windows);
-    }
-  }, []);
   return (
     <div className=" h-full w-screen bg-gray-50 select-none py-16 sm:py-20 px-4 sm:px-8 md:px-10 lg:px-20">
       <div className="container-custom h-full ">
@@ -133,7 +120,7 @@ const MindFocusSection = () => {
         <div className=" 2xl:pt-10  w-full   ">
           <div className="flex lg:justify-center h-auto pt-14 pb-12">
             <a
-              href={downloadLink || "#"}
+              href="https://apps.apple.com/in/app/id6621264428"
               target="_blank"
               rel="noopener noreferrer"
               className="!py-4 !px-7 bg-teal-900 hover:bg-teal-button-hover font-medium text-2xl antialiased text-white rounded-full transition duration-300 ease-in-out select-none"

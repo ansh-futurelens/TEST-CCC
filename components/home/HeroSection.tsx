@@ -1,18 +1,6 @@
-import React, { useEffect, useState } from "react";
 import Header from "../common/Header";
-import { DOWNLOAD_LINKS } from "../constants/downloadLinks";
 
 const HeroSection = () => {
-  const [downloadLink, setDownloadLink] = useState<string>("");
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const userAgent = window.navigator.userAgent;
-      if (userAgent.includes("Mac")) setDownloadLink(DOWNLOAD_LINKS.macos);
-      else if (userAgent.includes("Win")) setDownloadLink(DOWNLOAD_LINKS.windows);
-      else setDownloadLink(DOWNLOAD_LINKS.windows);
-    }
-  }, []);
   return (
     <div
       className="min-h-screen h-full w-screen bg-cover bg-center"
@@ -93,10 +81,11 @@ const HeroSection = () => {
 
             <div className="pt-14 pb-12 flex justify-start">
               <a
-                href={downloadLink || "#"}
+                href="https://apps.apple.com/in/app/id6621264428"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="py-4 px-7 bg-white text-teal-900 font-medium text-xl rounded-full transition duration-300 ease-in-out hover:bg-gray-200"
+                className="!py-4 !px-7 bg-white hover:bg-white-hover font-medium text-xl antialiased text-teal-900 rounded-full transition duration-300 ease-in-out select-none"
+                style={{ fontFamily: "Figtree, sans-serif" }}
               >
                 Try for Free
               </a>
